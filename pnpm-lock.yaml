@@ -38,6 +38,12 @@ importers:
 
   services/watcher:
     dependencies:
+      '@clockwork/activity-log':
+        specifier: workspace:*
+        version: link:../../packages/activity-log
+      '@clockwork/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@clockwork/connector-core':
         specifier: workspace:*
         version: link:../../packages/connector-core

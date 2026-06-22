@@ -5,6 +5,8 @@
   "type": "module",
   "main": "./dist/index.js",
   "dependencies": {
+    "@clockwork/activity-log": "workspace:*",
+    "@clockwork/config": "workspace:*",
     "@clockwork/connector-core": "workspace:*"
   },
   "scripts": {

@@ -74,3 +74,17 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** First lead source is an authenticated `POST /inbound` endpoint on the watcher. Gmail push, Microsoft Graph notifications, email-forwarding, and the CRM-webhook fallback all converge by POSTing to it; provider-specific subscription wiring (OAuth + Pub/Sub/Graph) is a thin adapter deferred to real-inbox time. Auth is a per-tenant shared-secret token now; provider signature verification (e.g. Google OIDC) deferred.
 - **Why:** One normalization path every source feeds; fully testable now without OAuth; realizes the "lead source is an abstraction" requirement.
 - **Revisit when:** we wire a real inbox (add the provider adapter + signature verification).
+
+### D11 — Lead drafting behind a LeadResponder interface (stub default, Claude env-gated)
+
+- **Context:** Task 6 instant-response. We need drafting that demos without credentials but can use real Claude.
+- **Decision:** `LeadResponder` interface with `StubResponder` (deterministic, offline, the default + used in all tests) and `ClaudeResponder` (real Anthropic API via fetch, activated only when `ANTHROPIC_API_KEY` is set). Default model `claude-sonnet-4-5`, overridable via `ANTHROPIC_MODEL`.
+- **Why:** Hermetic tests, zero-credential demo, real Claude is a one-env-var flip with no code change.
+- **Revisit when:** we polish prompt engineering, add human-in-the-loop approval, or pin a specific model for an install.
+
+### D12 — Prototype watcher runtime is single-process, per-tenant mock connectors
+
+- **Context:** Task 6 wiring. Intake supports multiple tenants (token→tenant), and the handler needs per-tenant resources.
+- **Decision:** The watcher builds one `MockCrmConnector` + resolved persona per configured tenant in-process, with a shared (tenant-tagged) in-memory activity log. A durable, multi-tenant runtime registry is deferred to real infra.
+- **Why:** Keeps the demo honest about multi-tenancy without building a runtime tenant registry now.
+- **Revisit when:** real CRM adapters (Task 13) and Postgres land, or the watcher runs as more than one instance.

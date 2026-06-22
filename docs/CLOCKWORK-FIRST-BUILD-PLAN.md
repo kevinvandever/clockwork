@@ -136,7 +136,7 @@ flowchart TD
   sample lead email, assert a correctly parsed lead event; auth/error-path tests.
   Demo: send a test lead email → watcher emits a normalized lead (no response yet).
 
-- [ ] **Task 6: Pipeline instant-response — close the speed-to-lead loop.**
+- [x] **Task 6: Pipeline instant-response — close the speed-to-lead loop.**
   Objective: on a lead event, call Claude (Pipeline logic) to draft an instant
   reply, send it via the connector (mock adapter), log to the activity log, with
   disclosed-AI + consent handling. Guidance: latency-sensitive path; keep
