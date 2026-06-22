@@ -122,7 +122,7 @@ flowchart TD
   mock; contract tests the real adapters will reuse. Demo: drive all four
   operations against the mock via tests and a single tool call.
 
-- [ ] **Task 4: Shared activity log / event store.**
+- [x] **Task 4: Shared activity log / event store.**
   Objective: a simple append-and-query store where every robot records what it did.
   Guidance: normalized event shape (who/what/when/contact/outcome); this becomes
   the Chief of Staff's feed. Tests: write/query/round-trip tests. Demo: write
