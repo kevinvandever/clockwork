@@ -128,7 +128,7 @@ flowchart TD
   the Chief of Staff's feed. Tests: write/query/round-trip tests. Demo: write
   sample events from two sources and query them back filtered by robot and date.
 
-- [ ] **Task 5: Email speed-to-lead watcher (detection only).**
+- [x] **Task 5: Email speed-to-lead watcher (detection only).**
   Objective: the always-on, hosted watcher detects a new-lead email and emits a
   normalized lead event via the lead-source abstraction. Guidance: implement one
   provider first (Gmail push or Graph), OAuth scopes least-privilege, fallback to

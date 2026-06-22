@@ -36,7 +36,11 @@ importers:
 
   packages/connector-core: {}
 
-  services/watcher: {}
+  services/watcher:
+    dependencies:
+      '@clockwork/connector-core':
+        specifier: workspace:*
+        version: link:../../packages/connector-core
 
 packages:
 

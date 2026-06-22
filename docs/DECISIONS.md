@@ -60,3 +60,17 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** Treat the current `CrmConnector` contract as provisional; expect field/semantic changes when the first real CRM adapter is built.
 - **Why:** We're CRM-agnostic by design; the contract tests localize the churn.
 - **Revisit when:** Task 13 (first real CRM adapter) — update the contract + tests in one place.
+
+### D9 — Lead dedup is in-memory now; durable later
+
+- **Context:** Task 5 watcher intake. Push delivery retries, so duplicate inbound emails must be dropped.
+- **Decision:** Use an in-memory seen-set (`InMemoryDedup`) keyed by messageId (or a hash of from+subject+receivedAt), scoped per tenant. Durable dedup (Postgres) replaces it behind the same shape later.
+- **Why:** Keeps Task 5 demoable with no infra; matches the activity-log posture (D6).
+- **Revisit when:** we provision Postgres, or run more than one watcher instance (a shared store is needed for cross-instance dedup).
+
+### D10 — HTTP intake endpoint is the first (and universal) lead source
+
+- **Context:** Task 5. Choosing how the watcher receives leads.
+- **Decision:** First lead source is an authenticated `POST /inbound` endpoint on the watcher. Gmail push, Microsoft Graph notifications, email-forwarding, and the CRM-webhook fallback all converge by POSTing to it; provider-specific subscription wiring (OAuth + Pub/Sub/Graph) is a thin adapter deferred to real-inbox time. Auth is a per-tenant shared-secret token now; provider signature verification (e.g. Google OIDC) deferred.
+- **Why:** One normalization path every source feeds; fully testable now without OAuth; realizes the "lead source is an abstraction" requirement.
+- **Revisit when:** we wire a real inbox (add the provider adapter + signature verification).
