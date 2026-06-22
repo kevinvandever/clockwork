@@ -103,7 +103,7 @@ flowchart TD
   criteria so it's checkable. Demo: a short memo Joe can read, ending in a clear
   recommendation that sets the infra direction for Tasks 5 and 10.
 
-- [ ] **Task 2: Project scaffold, CI, and test harness.**
+- [x] **Task 2: Project scaffold, CI, and test harness.**
   Objective: stand up the repo structure (connector core, watcher service,
   agentfolio app as separate packages), linting, and a green CI pipeline with a
   sample passing test. Includes a per-client config module with a persona registry:
