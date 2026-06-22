@@ -114,7 +114,7 @@ flowchart TD
   override wins). Demo: CI runs green on a push; a health endpoint responds locally;
   overriding a persona name in config changes what the resolver returns.
 
-- [ ] **Task 3: CRM-agnostic connector core + mock adapter.**
+- [x] **Task 3: CRM-agnostic connector core + mock adapter.**
   Objective: define the normalized interface (create/lookup contact, send message
   via CRM, fetch new leads, log activity) and ship a mock adapter, exposed as a
   tool Claude can call. Guidance: keep adapters thin behind the core; design for
