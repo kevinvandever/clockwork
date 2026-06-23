@@ -171,7 +171,7 @@ flowchart TD
   after the other robots run, Linda produces a daily brief + oversight dashboard
   summarizing their activity.
 
-- [ ] **Task 10: agentfolio buyer board (data, auth, views).** *(10a core: DONE; 10b Next.js UI: pending)*
+- [x] **Task 10: agentfolio buyer board (data, auth, views).** *(10a core + 10b Next.js UI: DONE)*
   Objective: greenfield buyer side — data model and board (properties, stages
   new/touring/offer/passed, tours, notes, comments) with auth and agent-private vs
   client views. Guidance: build to the hosting decision from Task 1; access control
