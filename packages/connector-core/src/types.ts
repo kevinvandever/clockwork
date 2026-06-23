@@ -15,6 +15,19 @@ export interface Contact {
   name?: string;
   /** Optional CRM segment/list membership, e.g. "sphere". */
   segment?: string;
+  /** ISO-8601 of the last outreach, used by Client Care rotation. */
+  lastContactedAt?: string;
+  /** Recurring key dates (birthday, home anniversary, …). */
+  importantDates?: ImportantDate[];
+}
+
+/** A recurring annual date, e.g. a birthday or home-purchase anniversary. */
+export interface ImportantDate {
+  label: string;
+  /** 1-12 */
+  month: number;
+  /** 1-31 */
+  day: number;
 }
 
 export interface ContactInput {
@@ -22,6 +35,10 @@ export interface ContactInput {
   phone?: string;
   name?: string;
   segment?: string;
+  /** ISO-8601 of the last outreach, used by Client Care rotation. */
+  lastContactedAt?: string;
+  /** Recurring key dates (birthday, home anniversary, …). */
+  importantDates?: ImportantDate[];
 }
 
 export interface ContactQuery {

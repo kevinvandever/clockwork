@@ -109,3 +109,17 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** `runMarketingNewsletter` is a plain function triggered on demand (a demo CLI); real cadence/scheduling is a Cowork scheduled task at install time.
 - **Why:** Keeps the robot demoable now without building a scheduler.
 - **Revisit when:** Task 14 packaging / wiring real Cowork scheduled tasks.
+
+### D16 — Connector Contact extended with lastContactedAt + importantDates
+
+- **Context:** Task 8. Client Care needs rotation timing and key dates, which live in the CRM.
+- **Decision:** Added optional `lastContactedAt?: string` and `importantDates?: ImportantDate[]` (`{ label, month, day }`, recurring annually) to `Contact`/`ContactInput`.
+- **Why:** CRM-owned data the connector should expose; mirrors the listContacts/segment evolution (D13).
+- **Revisit when:** the first real CRM adapter (Task 13) — field mapping may differ; non-annual dates may need a richer shape.
+
+### D17 — Home value report stubbed as explicitly unavailable
+
+- **Context:** Task 8. The report is records-gated (ties to agentfolio seller-watch / records access).
+- **Decision:** `homeValueReportStatus()` returns `{ available: false, reason }`; not invoked in the send loop. Callers branch on availability.
+- **Why:** Makes the deferral explicit and testable rather than silent.
+- **Revisit when:** Task 11 (ACRIS/records) and the seller-watch land.

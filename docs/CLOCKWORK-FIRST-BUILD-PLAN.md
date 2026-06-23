@@ -153,7 +153,7 @@ flowchart TD
   logged. Demo: trigger Marketing → newsletter drafted → sent to a test sphere via
   the mock CRM, recorded in the log.
 
-- [ ] **Task 8: Client Care curation (Stephanie) wiring.**
+- [x] **Task 8: Client Care curation (Stephanie) wiring.**
   Objective: wire sphere rotation + anniversaries/life-events sends through the
   connector on a cadence; explicitly stub the home value report (records-gated,
   deferred). Guidance: reuse the cadence + connector + logging patterns from
