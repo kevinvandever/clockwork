@@ -1,7 +1,4 @@
-import type {
-  AgentfolioStore,
-  AddPropertyInput,
-} from "./store.js";
+import type { AgentfolioStore, AddPropertyInput } from "./store.js";
 import {
   AgentfolioError,
   STAGES,
@@ -9,6 +6,8 @@ import {
   type Comment,
   type Note,
   type NoteVisibility,
+  type Property,
+  type RecordsProvider,
   type Stage,
   type Tour,
 } from "./types.js";
@@ -21,13 +20,25 @@ export interface Actor {
   role: "agent" | "client";
 }
 
+export interface AgentfolioServiceOptions {
+  /** Optional public-records source; when set, addProperty auto-pulls (best-effort). */
+  recordsProvider?: RecordsProvider;
+}
+
 /**
  * agentfolio application service. Enforces tenant isolation, board membership,
  * and role permissions, and returns role-shaped views. The UI/API calls this,
  * never the store directly.
  */
 export class AgentfolioService {
-  constructor(private readonly store: AgentfolioStore) {}
+  private readonly recordsProvider?: RecordsProvider;
+
+  constructor(
+    private readonly store: AgentfolioStore,
+    options: AgentfolioServiceOptions = {},
+  ) {
+    this.recordsProvider = options.recordsProvider;
+  }
 
   // --- boards ---
 
@@ -79,7 +90,56 @@ export class AgentfolioService {
       addedBy: actor.userId,
       agentPrivate: actor.role === "agent" ? input.agentPrivate : undefined,
     });
-    return viewProperty(property, actor.role);
+
+    // Best-effort records pull; a failure must never block adding the property.
+    const enriched = await this.tryPullRecords(
+      actor.tenantId,
+      property.id,
+      property.address,
+    );
+    return viewProperty(enriched ?? property, actor.role);
+  }
+
+  /** Agent-triggered re-pull of public records for a property. */
+  async refreshRecords(
+    actor: Actor,
+    propertyId: string,
+  ): Promise<PropertyView> {
+    this.requireAgent(actor);
+    const property = await this.requirePropertyBoardMember(actor, propertyId);
+    if (!this.recordsProvider) {
+      return viewProperty(property, actor.role);
+    }
+    const records = await this.recordsProvider.lookup(property.address);
+    if (!records) {
+      return viewProperty(property, actor.role);
+    }
+    const updated = await this.store.setPropertyRecords(
+      actor.tenantId,
+      property.id,
+      records,
+    );
+    return viewProperty(updated, actor.role);
+  }
+
+  private async tryPullRecords(
+    tenantId: string,
+    propertyId: string,
+    address: string,
+  ): Promise<Property | null> {
+    if (!this.recordsProvider) {
+      return null;
+    }
+    try {
+      const records = await this.recordsProvider.lookup(address);
+      if (!records) {
+        return null;
+      }
+      return await this.store.setPropertyRecords(tenantId, propertyId, records);
+    } catch {
+      // Records are a nice-to-have; never fail the add.
+      return null;
+    }
   }
 
   async listProperties(actor: Actor, boardId: string): Promise<PropertyView[]> {

@@ -87,3 +87,13 @@ export async function addCommentAction(formData: FormData): Promise<void> {
   }
   revalidatePath(`/boards/${boardId}`);
 }
+
+export async function refreshRecordsAction(formData: FormData): Promise<void> {
+  const actor = await getActor();
+  if (!actor) redirect("/");
+  const boardId = String(formData.get("boardId") ?? "");
+  const propertyId = String(formData.get("propertyId") ?? "");
+  const { service } = await getApp();
+  await service.refreshRecords(actor, propertyId);
+  revalidatePath(`/boards/${boardId}`);
+}

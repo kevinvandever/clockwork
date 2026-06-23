@@ -179,7 +179,7 @@ flowchart TD
   proving client view can't see agent-private fields. Demo: an agent creates a
   board, adds a property, moves it through stages; the client sees only the client view.
 
-- [ ] **Task 11: agentfolio public-records pull.**
+- [x] **Task 11: agentfolio public-records pull.**
   Objective: a records-source abstraction with an ACRIS (NYC) adapter that
   auto-pulls owner/deeds/mortgage/tax/building on add. Guidance: mirror the
   connector-core pattern (agnostic core + thin adapter) so other markets slot in

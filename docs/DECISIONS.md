@@ -137,3 +137,10 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** Split into `@clockwork/agentfolio-core` (10a: domain, in-memory store, `AgentfolioService` with tenant/membership/role enforcement + role-shaped views, fully vitest-tested) and `apps/agentfolio` (10b: thin Next.js UI). Access rules: agent = full control; client = view shared + add properties/comments; stage changes and agent-private notes are agent-only. Missing/cross-tenant resources return `not_found` (no existence leak); in-tenant non-members get `forbidden`.
 - **Why:** Keeps the security logic unit-tested without the UI; small increments.
 - **Revisit when:** real auth (10b uses lightweight session) and Postgres (store interface swap) land.
+
+### D20 — Public records behind a RecordsProvider; PLUTO-style slice now, ACRIS deeds later
+
+- **Context:** Task 11. Auto-pull public records when a property is added.
+- **Decision:** `RecordsProvider` interface in agentfolio-core; implementations in `@clockwork/records` — `StubRecordsProvider` (deterministic default) + `NycOpenDataRecordsProvider` (env-gated Socrata by address, injected fetch). The service auto-pulls best-effort on add (failure never blocks the add) and exposes agent-only `refreshRecords`. The real provider pulls owner + assessed value by address (PLUTO-style); true ACRIS deeds/mortgages (BBL-keyed) + address→BBL geocoding are deferred.
+- **Why:** Address-friendly records now without a geocoding rabbit hole; same agnostic-core/adapter pattern; `PublicRecords` shape has room to grow.
+- **Revisit when:** we need deeds/mortgages (add BBL resolution + ACRIS datasets) or other markets/MLS.

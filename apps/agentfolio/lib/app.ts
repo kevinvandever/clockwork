@@ -3,6 +3,7 @@ import {
   InMemoryAgentfolioStore,
   type Actor,
 } from "@clockwork/agentfolio-core";
+import { StubRecordsProvider } from "@clockwork/records";
 
 export const DEMO_TENANT = "tenant-demo";
 
@@ -20,7 +21,9 @@ export interface AppContext {
  */
 export async function createApp(): Promise<AppContext> {
   const store = new InMemoryAgentfolioStore();
-  const service = new AgentfolioService(store);
+  const service = new AgentfolioService(store, {
+    recordsProvider: new StubRecordsProvider(),
+  });
 
   const dana = await store.createUser({
     tenantId: DEMO_TENANT,

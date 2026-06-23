@@ -8,6 +8,7 @@ import {
   addNoteAction,
   addPropertyAction,
   moveStageAction,
+  refreshRecordsAction,
 } from "../../actions";
 
 export default async function BoardPage({
@@ -66,9 +67,12 @@ export default async function BoardPage({
               >
                 <div className="flex items-baseline justify-between">
                   <h3 className="font-medium">{property.address}</h3>
-                  {property.publicRecords?.owner && (
+                  {property.publicRecords && (
                     <span className="text-xs text-zinc-500">
-                      owner: {property.publicRecords.owner}
+                      {property.publicRecords.owner}
+                      {property.publicRecords.assessedValue
+                        ? ` · assessed $${property.publicRecords.assessedValue.toLocaleString()}`
+                        : ""}
                     </span>
                   )}
                 </div>
@@ -80,7 +84,7 @@ export default async function BoardPage({
                 )}
 
                 {isAgent && (
-                  <form action={moveStageAction} className="mt-3 flex gap-2">
+                  <form action={moveStageAction} className="mt-3 flex flex-wrap items-center gap-2">
                     <input type="hidden" name="boardId" value={boardId} />
                     <input type="hidden" name="propertyId" value={property.id} />
                     {STAGES.filter((s) => s !== property.stage).map((s) => (
@@ -93,6 +97,16 @@ export default async function BoardPage({
                         → {s}
                       </button>
                     ))}
+                  </form>
+                )}
+
+                {isAgent && (
+                  <form action={refreshRecordsAction} className="mt-2">
+                    <input type="hidden" name="boardId" value={boardId} />
+                    <input type="hidden" name="propertyId" value={property.id} />
+                    <button className="text-xs text-zinc-500 underline">
+                      Refresh public records
+                    </button>
                   </form>
                 )}
 

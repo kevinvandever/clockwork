@@ -57,6 +57,14 @@ export interface Property {
   publicRecords?: PublicRecords;
 }
 
+/**
+ * A pluggable public-records source (Task 11). Implementations live in
+ * @clockwork/records; the service uses this best-effort on add.
+ */
+export interface RecordsProvider {
+  lookup(address: string): Promise<PublicRecords | null>;
+}
+
 export interface Tour {
   id: string;
   tenantId: string;

@@ -35,6 +35,9 @@ importers:
       '@clockwork/agentfolio-core':
         specifier: workspace:*
         version: link:../../packages/agentfolio-core
+      '@clockwork/records':
+        specifier: workspace:*
+        version: link:../../packages/records
       next:
         specifier: ^15.1.6
         version: 15.5.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -101,6 +104,12 @@ importers:
       '@clockwork/connector-core':
         specifier: workspace:*
         version: link:../connector-core
+
+  packages/records:
+    dependencies:
+      '@clockwork/agentfolio-core':
+        specifier: workspace:*
+        version: link:../agentfolio-core
 
   services/watcher:
     dependencies:

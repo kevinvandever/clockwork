@@ -10,4 +10,8 @@ export {
   type AddCommentInput,
 } from "./store.js";
 export { viewProperty, visibleNotes, type PropertyView } from "./views.js";
-export { AgentfolioService, type Actor } from "./service.js";
+export {
+  AgentfolioService,
+  type Actor,
+  type AgentfolioServiceOptions,
+} from "./service.js";
