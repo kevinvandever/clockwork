@@ -88,3 +88,24 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** The watcher builds one `MockCrmConnector` + resolved persona per configured tenant in-process, with a shared (tenant-tagged) in-memory activity log. A durable, multi-tenant runtime registry is deferred to real infra.
 - **Why:** Keeps the demo honest about multi-tenancy without building a runtime tenant registry now.
 - **Revisit when:** real CRM adapters (Task 13) and Postgres land, or the watcher runs as more than one instance.
+
+### D13 — Connector contract extended with listContacts + Contact.segment
+
+- **Context:** Task 7. Marketing needs to fetch the sphere; the sphere lives in the CRM.
+- **Decision:** Added `listContacts(query?: { segment? })` to `CrmConnector` and an optional `segment` field to `Contact`/`ContactInput`. Mock + contract suite updated.
+- **Why:** The connector is the right owner of CRM reads; expected contract evolution (D8).
+- **Revisit when:** the first real CRM adapter (Task 13) — segments may map to CRM tags/lists differently.
+
+### D14 — AI disclosure text centralized in connector-core
+
+- **Context:** Task 7. Disclosure now needed by Pipeline (watcher) and Marketing.
+- **Decision:** `AI_DISCLOSURE` + `ensureDisclosure` live in `@clockwork/connector-core` (which owns the disclosure gate); the watcher re-exports them. No duplicated wording.
+- **Why:** One source of compliance wording across all robots.
+- **Revisit when:** counsel defines exact disclosure language, or per-channel disclosure is needed.
+
+### D15 — Marketing cadence is on-demand in the prototype
+
+- **Context:** Task 7. Real robots run on a Cowork scheduled task.
+- **Decision:** `runMarketingNewsletter` is a plain function triggered on demand (a demo CLI); real cadence/scheduling is a Cowork scheduled task at install time.
+- **Why:** Keeps the robot demoable now without building a scheduler.
+- **Revisit when:** Task 14 packaging / wiring real Cowork scheduled tasks.

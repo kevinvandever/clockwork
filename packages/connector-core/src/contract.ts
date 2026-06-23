@@ -29,6 +29,17 @@ export function runCrmConnectorContract(
       expect(await crm.findContact({ email: "nobody@example.com" })).toBeNull();
     });
 
+    it("lists contacts, optionally filtered by segment", async () => {
+      const crm = makeConnector("tenant-a");
+      await crm.createContact({ email: "a@x.com", segment: "sphere" });
+      await crm.createContact({ email: "b@x.com", segment: "sphere" });
+      await crm.createContact({ email: "c@x.com", segment: "lead" });
+      expect(await crm.listContacts()).toHaveLength(3);
+      const sphere = await crm.listContacts({ segment: "sphere" });
+      expect(sphere).toHaveLength(2);
+      expect(sphere.every((c) => c.segment === "sphere")).toBe(true);
+    });
+
     it("rejects a contact with neither email nor phone", async () => {
       const crm = makeConnector("tenant-a");
       await expect(

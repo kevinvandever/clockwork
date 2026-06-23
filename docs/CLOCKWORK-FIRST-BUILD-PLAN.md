@@ -145,7 +145,7 @@ flowchart TD
   Demo: a test lead email triggers an instant drafted response "sent" via the mock
   CRM and visible in the activity log.
 
-- [ ] **Task 7: Marketing robot (Dave) wiring.**
+- [x] **Task 7: Marketing robot (Dave) wiring.**
   Objective: package Joe's existing newsletter/personal-sends skills with a
   scheduled cadence and sphere send through the connector. Guidance: treat Joe's
   skill as black-box logic; Kevin owns the cadence + connector + logging. Tests:

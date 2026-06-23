@@ -13,17 +13,25 @@ export interface Contact {
   email?: string;
   phone?: string;
   name?: string;
+  /** Optional CRM segment/list membership, e.g. "sphere". */
+  segment?: string;
 }
 
 export interface ContactInput {
   email?: string;
   phone?: string;
   name?: string;
+  segment?: string;
 }
 
 export interface ContactQuery {
   email?: string;
   phone?: string;
+}
+
+/** Filter for listing contacts (e.g. the sphere for a newsletter send). */
+export interface ContactListQuery {
+  segment?: string;
 }
 
 export interface OutboundMessage {
@@ -87,6 +95,7 @@ export interface CrmConnector {
   readonly tenantId: string;
   createContact(contact: ContactInput): Promise<Contact>;
   findContact(query: ContactQuery): Promise<Contact | null>;
+  listContacts(query?: ContactListQuery): Promise<Contact[]>;
   sendMessage(message: OutboundMessage): Promise<SendResult>;
   fetchNewLeads(): Promise<Lead[]>;
   logActivity(event: ActivityEvent): Promise<void>;

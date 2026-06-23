@@ -3,6 +3,7 @@ import {
   type ActivityEvent,
   type Contact,
   type ContactInput,
+  type ContactListQuery,
   type ContactQuery,
   type CrmConnector,
   type Lead,
@@ -67,6 +68,13 @@ export class MockCrmConnector implements CrmConnector {
           (query.phone !== undefined && c.phone === query.phone),
       ) ?? null
     );
+  }
+
+  async listContacts(query?: ContactListQuery): Promise<Contact[]> {
+    if (query?.segment !== undefined) {
+      return this.contacts.filter((c) => c.segment === query.segment);
+    }
+    return [...this.contacts];
   }
 
   async sendMessage(message: OutboundMessage): Promise<SendResult> {

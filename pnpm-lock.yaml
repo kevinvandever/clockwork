@@ -36,6 +36,18 @@ importers:
 
   packages/connector-core: {}
 
+  packages/marketing:
+    dependencies:
+      '@clockwork/activity-log':
+        specifier: workspace:*
+        version: link:../activity-log
+      '@clockwork/config':
+        specifier: workspace:*
+        version: link:../config
+      '@clockwork/connector-core':
+        specifier: workspace:*
+        version: link:../connector-core
+
   services/watcher:
     dependencies:
       '@clockwork/activity-log':
