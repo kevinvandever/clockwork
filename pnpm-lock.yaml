@@ -32,6 +32,15 @@ importers:
 
   packages/activity-log: {}
 
+  packages/chief-of-staff:
+    dependencies:
+      '@clockwork/activity-log':
+        specifier: workspace:*
+        version: link:../activity-log
+      '@clockwork/config':
+        specifier: workspace:*
+        version: link:../config
+
   packages/client-care:
     dependencies:
       '@clockwork/activity-log':

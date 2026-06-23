@@ -123,3 +123,10 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** `homeValueReportStatus()` returns `{ available: false, reason }`; not invoked in the send loop. Callers branch on availability.
 - **Why:** Makes the deferral explicit and testable rather than silent.
 - **Revisit when:** Task 11 (ACRIS/records) and the seller-watch land.
+
+### D18 — Chief of Staff synthesizes feeds; internal brief carries no disclosure
+
+- **Context:** Task 9. Linda produces a daily brief + oversight from the activity log.
+- **Decision:** Split into `buildOversight` (deterministic dashboard data) + `BriefWriter` (prose, stub/Claude). The brief is internal (agent-facing), so it carries NO AI disclosure (unlike client-facing sends). Linda reads feeds and reports; she does not orchestrate/trigger the other robots (deferred). "Daily" is a configurable look-back window (default 24h) from a reference `now`.
+- **Why:** Keeps facts and prose separable/testable; matches "synthesis native; needs feeds" from the plan.
+- **Revisit when:** we add real orchestration (Linda triggering robots) or a visual dashboard UI.

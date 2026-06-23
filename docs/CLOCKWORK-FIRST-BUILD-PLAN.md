@@ -161,7 +161,7 @@ flowchart TD
   mock adapter; assert the report path is a clean no-op stub. Demo: a scheduled
   Client Care run surfaces due touches and sends them via the mock CRM, logged.
 
-- [ ] **Task 9: Chief of Staff (Linda) daily synthesis brief + oversight dashboard.**
+- [x] **Task 9: Chief of Staff (Linda) daily synthesis brief + oversight dashboard.**
   Objective: a scheduled task that reads the activity log (and connector data) to
   produce a daily brief artifact and an oversight view across the running robots.
   Guidance: synthesis is Claude-native; Kevin supplies the feeds and the
