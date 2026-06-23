@@ -55,6 +55,13 @@ export interface Property {
   agentPrivate?: AgentPrivateInfo;
   /** Populated in Task 11; public, so visible to clients. */
   publicRecords?: PublicRecords;
+  /** Set when handed off to the transaction room (Task 12; room itself stubbed). */
+  handoff?: Handoff;
+}
+
+export interface Handoff {
+  initiatedBy: string;
+  at: string;
 }
 
 /**
@@ -63,6 +70,31 @@ export interface Property {
  */
 export interface RecordsProvider {
   lookup(address: string): Promise<PublicRecords | null>;
+}
+
+/** Domain events agentfolio emits to an optional sink (Task 12 connectable hook). */
+export type AgentfolioEventType =
+  | "property_added"
+  | "stage_changed"
+  | "handoff_initiated";
+
+export interface AgentfolioEvent {
+  tenantId: string;
+  type: AgentfolioEventType;
+  boardId: string;
+  propertyId: string;
+  actorId: string;
+  detail?: string;
+  at: string;
+}
+
+/**
+ * Where agentfolio reports its actions. Default is a no-op (standalone). When a
+ * Clockwork install connects it, the bridge forwards events to the activity log.
+ * Keeps agentfolio-core free of any activity-log dependency.
+ */
+export interface AgentfolioEventSink {
+  record(event: AgentfolioEvent): Promise<void>;
 }
 
 export interface Tour {

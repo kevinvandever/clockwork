@@ -187,7 +187,7 @@ flowchart TD
   for add-property → records populated. Demo: add a property → public records
   auto-populate on the card.
 
-- [ ] **Task 12: agentfolio transaction-room handoff + connectable hook.**
+- [x] **Task 12: agentfolio transaction-room handoff + connectable hook.**
   Objective: a transaction-room handoff (stub the room itself) and a connectable
   event hook so agentfolio actions land in the shared activity log for the Chief of
   Staff. Guidance: this is the "sold separately but connectable" wiring. Tests:

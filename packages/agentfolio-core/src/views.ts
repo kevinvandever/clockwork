@@ -1,4 +1,11 @@
-import type { Note, Property, PublicRecords, Role, Stage } from "./types.js";
+import type {
+  Handoff,
+  Note,
+  Property,
+  PublicRecords,
+  Role,
+  Stage,
+} from "./types.js";
 
 /**
  * Role-shaped property view. The client variant intentionally has no
@@ -12,6 +19,8 @@ export interface PropertyView {
   addedBy: string;
   createdAt: string;
   publicRecords?: PublicRecords;
+  /** Shared: a property handed off to the transaction room. */
+  handoff?: Handoff;
   /** Present only in the agent view. */
   agentPrivate?: Property["agentPrivate"];
 }
@@ -25,6 +34,7 @@ export function viewProperty(property: Property, role: Role): PropertyView {
     addedBy: property.addedBy,
     createdAt: property.createdAt,
     publicRecords: property.publicRecords,
+    handoff: property.handoff,
   };
   if (role === "agent") {
     base.agentPrivate = property.agentPrivate;

@@ -2,6 +2,9 @@ import type { AgentfolioStore, AddPropertyInput } from "./store.js";
 import {
   AgentfolioError,
   STAGES,
+  type AgentfolioEvent,
+  type AgentfolioEventSink,
+  type AgentfolioEventType,
   type Board,
   type Comment,
   type Note,
@@ -23,6 +26,8 @@ export interface Actor {
 export interface AgentfolioServiceOptions {
   /** Optional public-records source; when set, addProperty auto-pulls (best-effort). */
   recordsProvider?: RecordsProvider;
+  /** Optional connectable hook; events are forwarded best-effort. */
+  eventSink?: AgentfolioEventSink;
 }
 
 /**
@@ -32,12 +37,14 @@ export interface AgentfolioServiceOptions {
  */
 export class AgentfolioService {
   private readonly recordsProvider?: RecordsProvider;
+  private readonly eventSink?: AgentfolioEventSink;
 
   constructor(
     private readonly store: AgentfolioStore,
     options: AgentfolioServiceOptions = {},
   ) {
     this.recordsProvider = options.recordsProvider;
+    this.eventSink = options.eventSink;
   }
 
   // --- boards ---
@@ -97,7 +104,9 @@ export class AgentfolioService {
       property.id,
       property.address,
     );
-    return viewProperty(enriched ?? property, actor.role);
+    const result = enriched ?? property;
+    await this.emit(actor, "property_added", result, `address=${result.address}`);
+    return viewProperty(result, actor.role);
   }
 
   /** Agent-triggered re-pull of public records for a property. */
@@ -163,6 +172,27 @@ export class AgentfolioService {
       property.id,
       stage,
     );
+    await this.emit(actor, "stage_changed", updated, `stage=${stage}`);
+    return viewProperty(updated, actor.role);
+  }
+
+  /**
+   * Hand a property off to the transaction room (agent-only). The room itself —
+   * and the Transaction robot — are stubbed; this records the handoff and emits
+   * the connectable event.
+   */
+  async initiateHandoff(
+    actor: Actor,
+    propertyId: string,
+  ): Promise<PropertyView> {
+    this.requireAgent(actor);
+    const property = await this.requirePropertyBoardMember(actor, propertyId);
+    const updated = await this.store.setPropertyHandoff(
+      actor.tenantId,
+      property.id,
+      { initiatedBy: actor.userId, at: new Date().toISOString() },
+    );
+    await this.emit(actor, "handoff_initiated", updated);
     return viewProperty(updated, actor.role);
   }
 
@@ -250,6 +280,32 @@ export class AgentfolioService {
   private requireAgent(actor: Actor): void {
     if (actor.role !== "agent") {
       throw new AgentfolioError("forbidden", "agent role required");
+    }
+  }
+
+  /** Forward a domain event to the optional sink; never let it break the action. */
+  private async emit(
+    actor: Actor,
+    type: AgentfolioEventType,
+    property: Property,
+    detail?: string,
+  ): Promise<void> {
+    if (!this.eventSink) {
+      return;
+    }
+    const event: AgentfolioEvent = {
+      tenantId: actor.tenantId,
+      type,
+      boardId: property.boardId,
+      propertyId: property.id,
+      actorId: actor.userId,
+      detail,
+      at: new Date().toISOString(),
+    };
+    try {
+      await this.eventSink.record(event);
+    } catch {
+      // Connectable hook is best-effort.
     }
   }
 

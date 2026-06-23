@@ -7,6 +7,7 @@ import {
   addCommentAction,
   addNoteAction,
   addPropertyAction,
+  handoffAction,
   moveStageAction,
   refreshRecordsAction,
 } from "../../actions";
@@ -66,7 +67,14 @@ export default async function BoardPage({
                 className="rounded-md border border-zinc-200 bg-white p-4"
               >
                 <div className="flex items-baseline justify-between">
-                  <h3 className="font-medium">{property.address}</h3>
+                  <h3 className="font-medium">
+                    {property.address}
+                    {property.handoff && (
+                      <span className="ml-2 rounded bg-emerald-100 px-2 py-0.5 text-xs text-emerald-800">
+                        handed off to transaction
+                      </span>
+                    )}
+                  </h3>
                   {property.publicRecords && (
                     <span className="text-xs text-zinc-500">
                       {property.publicRecords.owner}
@@ -106,6 +114,16 @@ export default async function BoardPage({
                     <input type="hidden" name="propertyId" value={property.id} />
                     <button className="text-xs text-zinc-500 underline">
                       Refresh public records
+                    </button>
+                  </form>
+                )}
+
+                {isAgent && !property.handoff && (
+                  <form action={handoffAction} className="mt-2">
+                    <input type="hidden" name="boardId" value={boardId} />
+                    <input type="hidden" name="propertyId" value={property.id} />
+                    <button className="rounded bg-emerald-700 px-2 py-1 text-xs text-white">
+                      Hand off to transaction
                     </button>
                   </form>
                 )}

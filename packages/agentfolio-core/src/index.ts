@@ -10,6 +10,7 @@ export {
   type AddCommentInput,
 } from "./store.js";
 export { viewProperty, visibleNotes, type PropertyView } from "./views.js";
+export { NoopEventSink } from "./sink.js";
 export {
   AgentfolioService,
   type Actor,

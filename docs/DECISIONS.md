@@ -144,3 +144,10 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** `RecordsProvider` interface in agentfolio-core; implementations in `@clockwork/records` — `StubRecordsProvider` (deterministic default) + `NycOpenDataRecordsProvider` (env-gated Socrata by address, injected fetch). The service auto-pulls best-effort on add (failure never blocks the add) and exposes agent-only `refreshRecords`. The real provider pulls owner + assessed value by address (PLUTO-style); true ACRIS deeds/mortgages (BBL-keyed) + address→BBL geocoding are deferred.
 - **Why:** Address-friendly records now without a geocoding rabbit hole; same agnostic-core/adapter pattern; `PublicRecords` shape has room to grow.
 - **Revisit when:** we need deeds/mortgages (add BBL resolution + ACRIS datasets) or other markets/MLS.
+
+### D21 — agentfolio connectable via an event sink; bridge in @clockwork/agentfolio-connect
+
+- **Context:** Task 12. Tie agentfolio's board actions into the robot side (Linda's brief) without coupling the packages.
+- **Decision:** agentfolio-core defines `AgentfolioEvent` + `AgentfolioEventSink` (default `NoopEventSink`) and emits best-effort on add/stage/handoff. `@clockwork/agentfolio-connect` provides `ActivityLogEventSink` (depends on agentfolio-core + activity-log) that writes events under the robot label `"agentfolio"` with `subjectId = propertyId`. Linda's existing brief picks them up with no Chief-of-Staff changes. Handoff = `initiateHandoff` (agent-only) sets `property.handoff` + emits `handoff_initiated`; the transaction room / Trush robot are stubbed.
+- **Why:** agentfolio stays standalone-sellable (noop sink) and core stays free of an activity-log dependency; the bridge is the "connectable" boundary. Label `"agentfolio"` keeps provenance accurate vs. impersonating a persona.
+- **Revisit when:** the Transaction robot (Trush) / real transaction room is built, or events need persona attribution.

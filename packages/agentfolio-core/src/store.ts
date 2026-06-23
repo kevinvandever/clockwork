@@ -2,6 +2,7 @@ import {
   AgentfolioError,
   type Board,
   type Comment,
+  type Handoff,
   type Note,
   type NoteVisibility,
   type Property,
@@ -11,7 +12,6 @@ import {
   type Tour,
   type User,
 } from "./types.js";
-
 export interface CreateUserInput {
   tenantId: string;
   role: Role;
@@ -82,6 +82,11 @@ export interface AgentfolioStore {
     tenantId: string,
     id: string,
     records: PublicRecords,
+  ): Promise<Property>;
+  setPropertyHandoff(
+    tenantId: string,
+    id: string,
+    handoff: Handoff,
   ): Promise<Property>;
 
   addTour(input: AddTourInput): Promise<Tour>;
@@ -192,6 +197,16 @@ export class InMemoryAgentfolioStore implements AgentfolioStore {
   ): Promise<Property> {
     const p = this.mustGetProperty(tenantId, id);
     p.publicRecords = records;
+    return p;
+  }
+
+  async setPropertyHandoff(
+    tenantId: string,
+    id: string,
+    handoff: Handoff,
+  ): Promise<Property> {
+    const p = this.mustGetProperty(tenantId, id);
+    p.handoff = handoff;
     return p;
   }
 

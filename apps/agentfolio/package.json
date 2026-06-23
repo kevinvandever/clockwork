@@ -11,6 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@clockwork/activity-log": "workspace:*",
+    "@clockwork/agentfolio-connect": "workspace:*",
     "@clockwork/agentfolio-core": "workspace:*",
     "@clockwork/records": "workspace:*",
     "next": "^15.1.6",

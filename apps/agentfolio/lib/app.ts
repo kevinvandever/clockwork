@@ -4,12 +4,15 @@ import {
   type Actor,
 } from "@clockwork/agentfolio-core";
 import { StubRecordsProvider } from "@clockwork/records";
+import { InMemoryActivityLog } from "@clockwork/activity-log";
+import { ActivityLogEventSink } from "@clockwork/agentfolio-connect";
 
 export const DEMO_TENANT = "tenant-demo";
 
 export interface AppContext {
   store: InMemoryAgentfolioStore;
   service: AgentfolioService;
+  activityLog: InMemoryActivityLog;
   agentId: string;
   clientId: string;
   boardId: string;
@@ -21,8 +24,11 @@ export interface AppContext {
  */
 export async function createApp(): Promise<AppContext> {
   const store = new InMemoryAgentfolioStore();
+  const activityLog = new InMemoryActivityLog();
   const service = new AgentfolioService(store, {
     recordsProvider: new StubRecordsProvider(),
+    // Connected: board actions feed the shared activity log (Chief of Staff).
+    eventSink: new ActivityLogEventSink(activityLog),
   });
 
   const dana = await store.createUser({
@@ -75,6 +81,7 @@ export async function createApp(): Promise<AppContext> {
   return {
     store,
     service,
+    activityLog,
     agentId: dana.id,
     clientId: cal.id,
     boardId: board.id,
