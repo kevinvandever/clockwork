@@ -32,6 +32,8 @@ importers:
 
   packages/activity-log: {}
 
+  packages/agentfolio-core: {}
+
   packages/chief-of-staff:
     dependencies:
       '@clockwork/activity-log':

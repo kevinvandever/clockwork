@@ -130,3 +130,10 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** Split into `buildOversight` (deterministic dashboard data) + `BriefWriter` (prose, stub/Claude). The brief is internal (agent-facing), so it carries NO AI disclosure (unlike client-facing sends). Linda reads feeds and reports; she does not orchestrate/trigger the other robots (deferred). "Daily" is a configurable look-back window (default 24h) from a reference `now`.
 - **Why:** Keeps facts and prose separable/testable; matches "synthesis native; needs feeds" from the plan.
 - **Revisit when:** we add real orchestration (Linda triggering robots) or a visual dashboard UI.
+
+### D19 — Task 10 split into core (10a) + Next.js UI (10b); access control in a tested core
+
+- **Context:** Task 10 (agentfolio buyer board) is large and security-sensitive.
+- **Decision:** Split into `@clockwork/agentfolio-core` (10a: domain, in-memory store, `AgentfolioService` with tenant/membership/role enforcement + role-shaped views, fully vitest-tested) and `apps/agentfolio` (10b: thin Next.js UI). Access rules: agent = full control; client = view shared + add properties/comments; stage changes and agent-private notes are agent-only. Missing/cross-tenant resources return `not_found` (no existence leak); in-tenant non-members get `forbidden`.
+- **Why:** Keeps the security logic unit-tested without the UI; small increments.
+- **Revisit when:** real auth (10b uses lightweight session) and Postgres (store interface swap) land.
