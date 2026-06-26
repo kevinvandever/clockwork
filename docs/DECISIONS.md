@@ -151,3 +151,17 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** agentfolio-core defines `AgentfolioEvent` + `AgentfolioEventSink` (default `NoopEventSink`) and emits best-effort on add/stage/handoff. `@clockwork/agentfolio-connect` provides `ActivityLogEventSink` (depends on agentfolio-core + activity-log) that writes events under the robot label `"agentfolio"` with `subjectId = propertyId`. Linda's existing brief picks them up with no Chief-of-Staff changes. Handoff = `initiateHandoff` (agent-only) sets `property.handoff` + emits `handoff_initiated`; the transaction room / Trush robot are stubbed.
 - **Why:** agentfolio stays standalone-sellable (noop sink) and core stays free of an activity-log dependency; the bridge is the "connectable" boundary. Label `"agentfolio"` keeps provenance accurate vs. impersonating a persona.
 - **Revisit when:** the Transaction robot (Trush) / real transaction room is built, or events need persona attribution.
+
+### D22 — Phase 2 direction: self-improving skills/voice (agent-approved, continuous + periodic review)
+
+- **Context:** Joe call. A capability to enhance/modify each robot's skill + voice over time from the client's real work.
+- **Decision (direction, not yet built):** Build on the existing `skillInstructions` seam — a future `@clockwork/skills` package with a versioned per-tenant/per-robot `SkillProfile` store + a stub/Claude `SkillSynthesizer`. Train continuously from sent/approved work, but require **human-in-the-loop approval** before a change goes live. The **real-estate-agent client approves**; Joe approves only when dogfooding. Versioned with diffs + rollback; AI disclosure stays structural.
+- **Why:** Strong product feature; amplifies Joe's curation (the moat) rather than replacing it; avoids unreviewed voice drift.
+- **Revisit when:** Phase 2 kickoff — resolve the "continuous training vs. periodic approval" staging (candidate profile + diff-for-approval on a cadence/threshold). Needs a design note.
+
+### D23 — Phase 2 direction: agentfolio is the agent's home with a derived todo list
+
+- **Context:** Joe call. agentfolio should be clean/easy and show the agent a todo list.
+- **Decision (direction):** Todo list lives in agentfolio, fed by the same data Linda reads (Client Care due touches, leads to review, offers awaiting handoff, drafts pending approval). Plus a dedicated UX/styling pass.
+- **Why:** The actionable cousin of the Chief of Staff brief; reuses the connect layer/activity feed.
+- **Revisit when:** Phase 2; needs a design note.

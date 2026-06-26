@@ -224,3 +224,43 @@ flowchart TD
 - Tuning options for a later pass: reorder so the speed-to-lead demo (Tasks 3–6)
   lands before agentfolio for an earlier sellable moment, or pull agentfolio
   (Tasks 10–12) to the front if that's the stronger sales artifact for Joe.
+
+---
+
+## Phase 2 — Backlog (post first-build; from the Joe call)
+
+Not yet scoped into tasks. Captured so they aren't lost. Each gets a proper design
+note before implementation.
+
+### P2-A: Self-improving skills + voice ("killer feature")
+
+Prompt the client up front for samples (emails, newsletters, social posts), synthesize
+a per-tenant, per-robot **skill/voice profile**, and **continuously refine it** as their
+real work flows through — with a human in the loop.
+
+- **Fits an existing seam:** every Claude drafter already accepts optional
+  `skillInstructions`. A new `@clockwork/skills` package would hold a versioned
+  `SkillProfile` store (in-memory now, Postgres later) + a `SkillSynthesizer`
+  (stub default, env-gated Claude). Drafters pull the current profile as their
+  `skillInstructions`.
+- **Loop:** ingest samples → synthesize/update profile → drafters use it →
+  learn continuously from sent/approved work → **periodic human-in-the-loop approval**
+  before a voice/skill change goes live.
+- **Approval model (per Joe call):** the **real-estate-agent client approves** voice/skill
+  updates. Joe only approves when he's dogfooding the tool for his own practice.
+- **Open design tension:** "train continuously" + "periodic human approval" — likely a
+  staged model: continuously accumulate a *candidate* profile, surface a diff for
+  approval on a cadence (or threshold), promote on approval, with versioning + rollback.
+- **Guardrails:** versioned with diffs, easy rollback, provenance (which samples shaped
+  it), and AI disclosure stays structural. Protects the moat (amplifies Joe's curation).
+
+### P2-B: agentfolio cleanup + agent todo list
+
+agentfolio is the **agent's home**, clean and easy to use, showing a **todo list derived
+from input already gathered** — the actionable cousin of Linda's brief.
+
+- **Fed by the same data:** Client Care due touches, new leads needing review, properties
+  at offer awaiting handoff, and (ties to P2-A) drafts pending approval.
+- **Where:** surfaced in agentfolio, sourced from the activity log + robots (same feed
+  Linda reads). Plus a dedicated styling/UX pass (Tailwind already in place — polish,
+  not rewrite).
