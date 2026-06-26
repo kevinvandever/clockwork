@@ -5,6 +5,15 @@ These are **product assets, not code**. They feed the Claude drafters' optional
 `skillInstructions` input and are the seed corpus for the Phase 2 self-improving-skills
 feature (see docs/DECISIONS.md D22).
 
+## Joe's skills (received) — mapping
+
+| File | Skill | Maps to robot | Notes |
+|------|-------|---------------|-------|
+| `sal-method.md` | Sal Method — 1:1 relationship sends (match story → sphere/warm contact, draft personal email) | **Client Care (Stephanie)** / personal sends | Drafts only; value-first "iron law"; reads from CRM (manual mode until connected) |
+| `newsletter-draft.md` | Newsletter — 400–700 word piece in Joe's voice from one anchor story | **Marketing (Dave)** | Draft only, never sends |
+| `townhouse-stories.md` | Daily content-sourcing / story pull | **Marketing (Dave)** / content | Feeds both newsletter-draft and sal-method |
+| `acris-property-pull.md` | NYC property dossier from PLUTO + ACRIS (BBL, deeds, mortgages, confidence) | **agentfolio records** (Task 11 / D20) | Real blueprint for the records provider + deferred ACRIS deeds/BBL work |
+
 ## Convention
 
 - One markdown file per skill, kebab-case, mapped to a robot where possible:
