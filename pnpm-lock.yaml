@@ -127,6 +127,18 @@ importers:
         specifier: workspace:*
         version: link:../connector-core
 
+  packages/pipeline:
+    dependencies:
+      '@clockwork/activity-log':
+        specifier: workspace:*
+        version: link:../activity-log
+      '@clockwork/config':
+        specifier: workspace:*
+        version: link:../config
+      '@clockwork/connector-core':
+        specifier: workspace:*
+        version: link:../connector-core
+
   packages/records:
     dependencies:
       '@clockwork/agentfolio-core':
@@ -144,6 +156,9 @@ importers:
       '@clockwork/connector-core':
         specifier: workspace:*
         version: link:../../packages/connector-core
+      '@clockwork/pipeline':
+        specifier: workspace:*
+        version: link:../../packages/pipeline
 
 packages:
 

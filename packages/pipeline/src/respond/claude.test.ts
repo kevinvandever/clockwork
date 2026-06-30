@@ -23,11 +23,12 @@ function fakeFetch(text: string, ok = true): typeof fetch {
 }
 
 describe("buildPrompt", () => {
-  it("includes the persona name and the lead details", () => {
-    const prompt = buildPrompt(lead, pipeline);
+  it("includes the persona name and lead details, prepending skill text", () => {
+    const prompt = buildPrompt(lead, pipeline, "JOE SKILL: be warm");
     expect(prompt).toContain("Josh 2");
     expect(prompt).toContain("zillow");
     expect(prompt).toContain("Tour request");
+    expect(prompt.startsWith("JOE SKILL: be warm")).toBe(true);
   });
 });
 
@@ -52,22 +53,20 @@ describe("ClaudeResponder", () => {
     expect(JSON.parse(init.body as string).model).toBe("claude-test");
   });
 
-  it("falls back to the default model when none is given", async () => {
-    const fetchImpl = fakeFetch("ok");
-    const responder = new ClaudeResponder({ apiKey: "sk-test", fetchImpl });
-    await responder.draft(lead, pipeline);
-    const init = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock
+  it("falls back to the default model and throws on API error", async () => {
+    const okFetch = fakeFetch("ok");
+    await new ClaudeResponder({ apiKey: "sk-test", fetchImpl: okFetch }).draft(
+      lead,
+      pipeline,
+    );
+    const init = (okFetch as unknown as ReturnType<typeof vi.fn>).mock
       .calls[0][1] as RequestInit;
     expect(JSON.parse(init.body as string).model).toBe(DEFAULT_MODEL);
-  });
 
-  it("throws when the API responds with an error", async () => {
-    const responder = new ClaudeResponder({
+    const bad = new ClaudeResponder({
       apiKey: "sk-test",
       fetchImpl: fakeFetch("nope", false),
     });
-    await expect(responder.draft(lead, pipeline)).rejects.toThrow(
-      /claude_request_failed/,
-    );
+    await expect(bad.draft(lead, pipeline)).rejects.toThrow(/claude_request_failed/);
   });
 });

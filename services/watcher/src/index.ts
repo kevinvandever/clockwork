@@ -1,12 +1,15 @@
 import { resolveClientConfig } from "@clockwork/config";
 import { MockCrmConnector } from "@clockwork/connector-core";
 import { InMemoryActivityLog } from "@clockwork/activity-log";
+import {
+  ClaudeResponder,
+  StubResponder,
+  createPipelineHandler,
+  type LeadResponder,
+  type TenantContext,
+} from "@clockwork/pipeline";
 import { loadConfig } from "./config.js";
-import { createPipelineHandler, type TenantContext } from "./handler.js";
 import { LeadIntake } from "./leads/intake.js";
-import { ClaudeResponder } from "./respond/claude.js";
-import { StubResponder } from "./respond/stub.js";
-import type { LeadResponder } from "./respond/types.js";
 import { createServer } from "./server.js";
 
 const config = loadConfig();

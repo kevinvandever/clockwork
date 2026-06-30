@@ -1,7 +1,7 @@
 import type { ResolvedPersona } from "@clockwork/config";
 import type { CrmConnector } from "@clockwork/connector-core";
 import type { ActivityLog } from "@clockwork/activity-log";
-import type { LeadHandler, ReceivedLead } from "./leads/types.js";
+import type { LeadHandler, ReceivedLead } from "./types.js";
 import type { LeadResponder } from "./respond/types.js";
 
 /** Per-tenant runtime resources the handler needs. */

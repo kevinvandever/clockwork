@@ -1,20 +1,24 @@
 {
-  "name": "@clockwork/watcher",
+  "name": "@clockwork/pipeline",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "dependencies": {
     "@clockwork/activity-log": "workspace:*",
     "@clockwork/config": "workspace:*",
-    "@clockwork/connector-core": "workspace:*",
-    "@clockwork/pipeline": "workspace:*"
+    "@clockwork/connector-core": "workspace:*"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "start": "node dist/index.js",
-    "dev": "node --watch --experimental-strip-types src/index.ts"
+    "test": "vitest run"
   }
 }

@@ -32,10 +32,7 @@ describe("StubResponder", () => {
   it("derives the subject from the message and falls back when absent", async () => {
     const withMsg = await new StubResponder().draft(lead(), pipeline);
     expect(withMsg.subject).toContain("Re:");
-    const noMsg = await new StubResponder().draft(
-      lead({ message: undefined }),
-      pipeline,
-    );
+    const noMsg = await new StubResponder().draft(lead({ message: undefined }), pipeline);
     expect(noMsg.subject).toBe("Thanks for reaching out");
   });
 

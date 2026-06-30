@@ -1,7 +1,6 @@
 import type { Lead } from "@clockwork/connector-core";
 
-// Disclosure wording lives in connector-core (single source) and is re-exported
-// here so the existing responder imports keep working.
+// Disclosure wording lives in connector-core (single source) and is re-exported here.
 export { AI_DISCLOSURE, ensureDisclosure } from "@clockwork/connector-core";
 
 /** Derive a subject line from the lead's message, with a sensible fallback. */

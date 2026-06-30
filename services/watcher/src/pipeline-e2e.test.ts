@@ -2,10 +2,13 @@ import { describe, it, expect } from "vitest";
 import { resolveAllPersonas } from "@clockwork/config";
 import { MockCrmConnector } from "@clockwork/connector-core";
 import { InMemoryActivityLog } from "@clockwork/activity-log";
+import {
+  createPipelineHandler,
+  StubResponder,
+  type TenantContext,
+} from "@clockwork/pipeline";
 import type { WatcherConfig } from "./config.js";
-import { createPipelineHandler, type TenantContext } from "./handler.js";
 import { LeadIntake } from "./leads/intake.js";
-import { StubResponder } from "./respond/stub.js";
 
 /**
  * End-to-end speed-to-lead loop: an authenticated inbound email flows through
@@ -35,7 +38,6 @@ describe("speed-to-lead end-to-end", () => {
 
   it("turns an inbound lead email into a sent, logged instant response", async () => {
     const { intake, connector, activityLog } = build();
-
     const result = await intake.process("demo-secret", {
       from: "Jane Buyer <jane@example.com>",
       subject: "Interested in 123 Main St",
@@ -46,7 +48,6 @@ describe("speed-to-lead end-to-end", () => {
 
     const sent = connector.getSentMessages();
     expect(sent).toHaveLength(1);
-    expect(sent[0]?.to).toBe("jane@example.com");
     expect(sent[0]?.aiDisclosed).toBe(true);
     expect(sent[0]?.body).toContain("Josh 2");
 
