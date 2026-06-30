@@ -31,9 +31,10 @@ export default async function BoardsPage() {
           <li key={b.id}>
             <Link
               href={`/boards/${b.id}`}
-              className="block rounded-md border border-zinc-200 bg-white px-4 py-3 hover:border-zinc-400"
+              className="flex items-center justify-between rounded-md border border-zinc-200 bg-white px-4 py-3 transition hover:border-zinc-400 hover:bg-zinc-50"
             >
-              {b.title}
+              <span className="font-medium">{b.title}</span>
+              <span className="text-sm text-zinc-500">View board →</span>
             </Link>
           </li>
         ))}
