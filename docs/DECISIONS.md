@@ -165,3 +165,17 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision (direction):** Todo list lives in agentfolio, fed by the same data Linda reads (Client Care due touches, leads to review, offers awaiting handoff, drafts pending approval). Plus a dedicated UX/styling pass.
 - **Why:** The actionable cousin of the Chief of Staff brief; reuses the connect layer/activity feed.
 - **Revisit when:** Phase 2; needs a design note.
+
+### D24 — Rechat adapter: documented-shape, fake-fetch tested, live validation deferred
+
+- **Context:** Task 13, no live creds yet. Build the first real CRM adapter without guessing.
+- **Decision:** `@clockwork/crm-rechat` `RechatConnector` implements `CrmConnector` against Rechat's documented API (OAuth2 bearer, contacts, lead capture). Contacts ops mapped + fake-fetch unit-tested; the disclosure gate (`send_blocked`) is enforced. Two paths fail loudly rather than guess: `sendMessage` throws `adapter_error` ("outbound send not verified") and `fetchNewLeads` returns `[]` (webhook-first via `/inbound`). `logActivity` is best-effort. Endpoints are unverified pending Joe's credentials.
+- **Why:** Proves the adapter pattern + swap seam now; honest about what needs live confirmation.
+- **Revisit when:** Joe provides Rechat OAuth2 creds — confirm endpoints/payloads, the outbound-send capability, and run the flows live; add token acquisition.
+
+### D25 — @clockwork/install composition root + connector factory + unified demo (Task 14)
+
+- **Context:** Task 14. Turn the pieces into a repeatable per-client install and a single demo, without real creds.
+- **Decision:** `@clockwork/install` exposes `createConnector(tenantId, crm)` (mock ↔ rechat config flip) and `createInstall(config)` wiring all four robots + agentfolio (connected to one activity log) from one `InstallConfig`. Drafting is stub or Claude by `anthropicApiKey`; Joe's `skills/*.md` load via `loadSkills()`. A narrated `demo` runs the full day on stand-ins. `docs/INSTALL-CHECKLIST.md` is the front-door runbook with a stand-in→real swap map.
+- **Why:** Demoable, sellable prototype end-to-end now; each external is a documented one-line swap.
+- **Revisit when:** real CRM/Outlook/Railway land — flip config, no structural change.

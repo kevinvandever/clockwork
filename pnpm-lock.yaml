@@ -115,6 +115,48 @@ importers:
 
   packages/connector-core: {}
 
+  packages/crm-rechat:
+    dependencies:
+      '@clockwork/connector-core':
+        specifier: workspace:*
+        version: link:../connector-core
+
+  packages/install:
+    dependencies:
+      '@clockwork/activity-log':
+        specifier: workspace:*
+        version: link:../activity-log
+      '@clockwork/agentfolio-connect':
+        specifier: workspace:*
+        version: link:../agentfolio-connect
+      '@clockwork/agentfolio-core':
+        specifier: workspace:*
+        version: link:../agentfolio-core
+      '@clockwork/chief-of-staff':
+        specifier: workspace:*
+        version: link:../chief-of-staff
+      '@clockwork/client-care':
+        specifier: workspace:*
+        version: link:../client-care
+      '@clockwork/config':
+        specifier: workspace:*
+        version: link:../config
+      '@clockwork/connector-core':
+        specifier: workspace:*
+        version: link:../connector-core
+      '@clockwork/crm-rechat':
+        specifier: workspace:*
+        version: link:../crm-rechat
+      '@clockwork/marketing':
+        specifier: workspace:*
+        version: link:../marketing
+      '@clockwork/pipeline':
+        specifier: workspace:*
+        version: link:../pipeline
+      '@clockwork/records':
+        specifier: workspace:*
+        version: link:../records
+
   packages/marketing:
     dependencies:
       '@clockwork/activity-log':

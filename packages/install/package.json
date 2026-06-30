@@ -1,0 +1,33 @@
+{
+  "name": "@clockwork/install",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@clockwork/activity-log": "workspace:*",
+    "@clockwork/agentfolio-connect": "workspace:*",
+    "@clockwork/agentfolio-core": "workspace:*",
+    "@clockwork/chief-of-staff": "workspace:*",
+    "@clockwork/client-care": "workspace:*",
+    "@clockwork/config": "workspace:*",
+    "@clockwork/connector-core": "workspace:*",
+    "@clockwork/crm-rechat": "workspace:*",
+    "@clockwork/marketing": "workspace:*",
+    "@clockwork/pipeline": "workspace:*",
+    "@clockwork/records": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "demo": "node dist/demo.js"
+  }
+}

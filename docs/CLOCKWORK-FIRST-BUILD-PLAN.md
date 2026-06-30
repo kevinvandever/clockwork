@@ -195,7 +195,7 @@ flowchart TD
   Linda's brief can read. Demo: move a property to handoff → the event shows up in
   the Chief of Staff feed.
 
-- [ ] **Task 13: First real CRM adapter.**
+- [x] **Task 13: First real CRM adapter.** *(Rechat adapter built against documented API, fake-fetch tested; live validation pending Joe's creds — D24)*
   Objective: implement the agnostic interface against one real CRM sandbox (e.g.,
   Rechat or the first client's CRM) and swap mock → real behind a config flag.
   Guidance: reuse the Task 3 contract tests unchanged. Tests: contract tests pass
@@ -203,7 +203,7 @@ flowchart TD
   against the real sandbox. Demo: the same three flows run end-to-end against a real
   CRM, sending through it.
 
-- [ ] **Task 14: Install packaging + per-client config + handover.**
+- [x] **Task 14: Install packaging + per-client config + handover.** *(@clockwork/install + unified demo + install checklist; on stand-ins — D25)*
   Objective: turn the pieces into a repeatable per-client install — config/secrets
   per client (including persona-name overrides for each robot), the lean front-door
   audit/install checklist (salvaged from the v3 appendix), and deployment of the
