@@ -31,11 +31,11 @@ export async function createApp(): Promise<AppContext> {
     eventSink: new ActivityLogEventSink(activityLog),
   });
 
-  const dana = await store.createUser({
+  const joe = await store.createUser({
     tenantId: DEMO_TENANT,
     role: "agent",
-    name: "Dana Agent",
-    email: "dana@demo.com",
+    name: "Joe",
+    email: "joe@demo.com",
   });
   const cal = await store.createUser({
     tenantId: DEMO_TENANT,
@@ -45,7 +45,7 @@ export async function createApp(): Promise<AppContext> {
   });
 
   const agent: Actor = {
-    userId: dana.id,
+    userId: joe.id,
     tenantId: DEMO_TENANT,
     role: "agent",
   };
@@ -82,7 +82,7 @@ export async function createApp(): Promise<AppContext> {
     store,
     service,
     activityLog,
-    agentId: dana.id,
+    agentId: joe.id,
     clientId: cal.id,
     boardId: board.id,
   };

@@ -22,7 +22,7 @@ export default async function LoginPage() {
         <form action={loginAction}>
           <input type="hidden" name="userId" value={app.agentId} />
           <button className="rounded-md bg-zinc-900 px-4 py-2 text-white">
-            Log in as Dana (agent)
+            Log in as Joe (agent)
           </button>
         </form>
         <form action={loginAction}>
