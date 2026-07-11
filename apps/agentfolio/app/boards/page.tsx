@@ -17,6 +17,16 @@ export default async function BoardsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Boards</h1>
         <div className="flex items-center gap-3 text-sm text-zinc-600">
+          {actor.role === "agent" && (
+            <>
+              <Link href="/newsletter" className="underline">
+                Newsletter
+              </Link>
+              <Link href="/settings" className="underline">
+                Settings
+              </Link>
+            </>
+          )}
           <span className="rounded-full bg-zinc-200 px-3 py-1">
             {actor.role}
           </span>

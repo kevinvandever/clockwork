@@ -7,10 +7,19 @@ import { getApp } from "@/lib/app";
 import { clearSession, getActor, setSession, verifyPassword } from "@/lib/session";
 
 export async function loginAction(formData: FormData): Promise<void> {
-  const userId = String(formData.get("userId") ?? "");
+  // The login form supplies a `tenantId:userId` pair so one deployment can
+  // serve multiple tenants. Both are re-signed into the session cookie.
+  const principal = String(formData.get("principal") ?? "");
   const password = String(formData.get("password") ?? "");
 
-  if (!userId) {
+  const sepIdx = principal.indexOf(":");
+  if (sepIdx === -1) {
+    redirect("/");
+    return;
+  }
+  const tenantId = principal.slice(0, sepIdx);
+  const userId = principal.slice(sepIdx + 1);
+  if (!tenantId || !userId) {
     redirect("/");
     return;
   }
@@ -22,7 +31,7 @@ export async function loginAction(formData: FormData): Promise<void> {
     return;
   }
 
-  await setSession(userId);
+  await setSession(tenantId, userId);
   redirect("/boards");
 }
 

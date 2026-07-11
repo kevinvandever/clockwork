@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getActor } from "@/lib/session";
 import { getNewsletterStore } from "@/lib/newsletter";
-import { DEMO_TENANT } from "@/lib/app";
 import { submitStoryAction, setDispositionAction } from "./actions";
 import { CopyButton } from "./copy-button";
 
@@ -12,6 +11,8 @@ interface PageProps {
 export default async function NewsletterPage({ searchParams }: PageProps) {
   const actor = await getActor();
   if (!actor) redirect("/");
+  // Newsletter drafting is an agent tool (spends the agent's API budget).
+  if (actor.role !== "agent") redirect("/boards");
 
   const params = await searchParams;
   const id = typeof params.id === "string" ? params.id : undefined;
@@ -39,7 +40,7 @@ export default async function NewsletterPage({ searchParams }: PageProps) {
   // If we have an ID, fetch the draft record
   if (id) {
     const store = getNewsletterStore();
-    const record = await store.get(DEMO_TENANT, id);
+    const record = await store.get(actor.tenantId, id);
 
     if (!record) {
       return <EmptyState />;
@@ -361,20 +362,20 @@ function MissingKeyState() {
       <div className="rounded-md border border-zinc-200 bg-zinc-50 p-4">
         <h2 className="text-sm font-medium text-zinc-800">Setup needed</h2>
         <p className="mt-2 text-sm text-zinc-600">
-          Set your{" "}
-          <code className="rounded bg-zinc-200 px-1 py-0.5 text-xs">
-            ANTHROPIC_API_KEY
-          </code>{" "}
-          environment variable to enable newsletter drafting.
-        </p>
-        <p className="mt-1 text-sm text-zinc-500">
-          Add it to your <code className="text-xs">.env.local</code> file or
-          your deployment environment.
+          Add your Anthropic API key in{" "}
+          <a href="/settings" className="font-medium underline">
+            Settings
+          </a>{" "}
+          to enable newsletter drafting. Your key is stored encrypted and used
+          only to draft your newsletters.
         </p>
       </div>
 
-      <a href="/newsletter" className="inline-block text-sm text-zinc-500 underline">
-        Back
+      <a
+        href="/settings"
+        className="inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm text-white"
+      >
+        Go to Settings
       </a>
     </main>
   );

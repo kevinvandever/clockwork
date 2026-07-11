@@ -1,9 +1,15 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { Actor } from "@clockwork/agentfolio-core";
-import { DEMO_TENANT, getApp } from "./app";
+import { getApp } from "./app";
 
 const COOKIE = "agentfolio_uid";
+
+/** Identity carried in the signed session cookie. */
+export interface SessionIdentity {
+  tenantId: string;
+  userId: string;
+}
 
 /**
  * Session secret used to HMAC-sign the session cookie.
@@ -17,9 +23,7 @@ function getSessionSecret(): string {
   return "dev-only-session-secret-do-not-use-in-prod";
 }
 
-/**
- * Produce an HMAC-SHA256 hex signature for a given payload.
- */
+/** Produce an HMAC-SHA256 hex signature for a given payload. */
 function sign(payload: string): string {
   return createHmac("sha256", getSessionSecret())
     .update(payload)
@@ -37,49 +41,59 @@ function verifySignature(payload: string, signature: string): boolean {
 }
 
 /**
- * Encode a userId into a signed cookie value: `userId.signature`
+ * Encode an identity into a signed cookie value: `tenantId:userId.signature`.
+ * The tenantId is signed alongside the userId so it cannot be forged — this is
+ * what lets one deployment serve multiple tenants safely.
  */
-function encodeCookie(userId: string): string {
-  const sig = sign(userId);
-  return `${userId}.${sig}`;
+function encodeCookie(identity: SessionIdentity): string {
+  const payload = `${identity.tenantId}:${identity.userId}`;
+  return `${payload}.${sign(payload)}`;
 }
 
 /**
- * Decode and verify a signed cookie value. Returns the userId if valid,
- * null otherwise.
+ * Decode and verify a signed cookie value. Returns the identity if valid,
+ * null otherwise (missing, malformed, unsigned, or tampered).
  */
-function decodeCookie(raw: string): string | null {
+function decodeCookie(raw: string): SessionIdentity | null {
   const dotIdx = raw.lastIndexOf(".");
   if (dotIdx === -1) return null;
-  const userId = raw.slice(0, dotIdx);
+  const payload = raw.slice(0, dotIdx);
   const sig = raw.slice(dotIdx + 1);
-  if (!userId || !sig) return null;
-  if (!verifySignature(userId, sig)) return null;
-  return userId;
+  if (!payload || !sig) return null;
+  if (!verifySignature(payload, sig)) return null;
+
+  const sepIdx = payload.indexOf(":");
+  if (sepIdx === -1) return null;
+  const tenantId = payload.slice(0, sepIdx);
+  const userId = payload.slice(sepIdx + 1);
+  if (!tenantId || !userId) return null;
+  return { tenantId, userId };
 }
 
 /**
- * Resolve the current actor from the signed session cookie.
- * The cookie value is `userId.hmac(userId, SESSION_SECRET)`.
- * If the cookie is missing, malformed, or the HMAC doesn't verify,
- * returns null (unauthenticated).
+ * Resolve the current actor from the signed session cookie. The tenant comes
+ * from the signed cookie, and the user is confirmed to exist in that tenant
+ * (fails closed for deleted users or cross-tenant tampering).
  */
 export async function getActor(): Promise<Actor | null> {
   const raw = (await cookies()).get(COOKIE)?.value;
   if (!raw) return null;
 
-  const uid = decodeCookie(raw);
-  if (!uid) return null;
+  const identity = decodeCookie(raw);
+  if (!identity) return null;
 
   const { store } = await getApp();
-  const user = await store.getUser(DEMO_TENANT, uid);
+  const user = await store.getUser(identity.tenantId, identity.userId);
   return user
-    ? { userId: user.id, tenantId: DEMO_TENANT, role: user.role }
+    ? { userId: user.id, tenantId: user.tenantId, role: user.role }
     : null;
 }
 
-export async function setSession(userId: string): Promise<void> {
-  (await cookies()).set(COOKIE, encodeCookie(userId), {
+export async function setSession(
+  tenantId: string,
+  userId: string,
+): Promise<void> {
+  (await cookies()).set(COOKIE, encodeCookie({ tenantId, userId }), {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
@@ -105,9 +119,7 @@ export function verifyPassword(password: string): boolean {
   }
   // Use HMAC comparison to safely handle variable-length inputs
   // without leaking timing information about the expected value.
-  const inputHmac = createHmac("sha256", "pw-check")
-    .update(password)
-    .digest();
+  const inputHmac = createHmac("sha256", "pw-check").update(password).digest();
   const expectedHmac = createHmac("sha256", "pw-check")
     .update(expected)
     .digest();

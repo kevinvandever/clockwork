@@ -179,3 +179,15 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
 - **Decision:** `@clockwork/install` exposes `createConnector(tenantId, crm)` (mock ↔ rechat config flip) and `createInstall(config)` wiring all four robots + agentfolio (connected to one activity log) from one `InstallConfig`. Drafting is stub or Claude by `anthropicApiKey`; Joe's `skills/*.md` load via `loadSkills()`. A narrated `demo` runs the full day on stand-ins. `docs/INSTALL-CHECKLIST.md` is the front-door runbook with a stand-in→real swap map.
 - **Why:** Demoable, sellable prototype end-to-end now; each external is a documented one-line swap.
 - **Revisit when:** real CRM/Outlook/Railway land — flip config, no structural change.
+
+### D26 — Multi-tenant foundation: `@clockwork/tenants` registry, encrypted BYO API keys, versioned per-tenant skills
+
+- **Context:** The newsletter tool (and the app generally) shipped single-tenant — one `ANTHROPIC_API_KEY` from env and one shared skill file from the filesystem. To serve multiple agents/clients from one deployment, key + skills + persona names must resolve per tenant. There was no tenant registry at all (tenant was a bare `tenantId: string`).
+- **Decision:**
+  - New `@clockwork/tenants` package: a `TenantStore` interface + `InMemoryTenantStore` (Postgres impl deferred, same stub-behind-interface pattern as D6/D9). Holds tenant record (displayName, personaOverrides), the encrypted Anthropic API key, and versioned per-robot skill text.
+  - **BYO API key per tenant**, encrypted at rest with AES-256-GCM via an injected `SecretCipher`; the encryption secret is one `KEY_ENCRYPTION_SECRET` we manage (not per client). `tenantId` is bound as GCM additional-authenticated-data so a ciphertext can't be replayed across tenants. Keys are decrypted server-side only, never sent to the browser.
+  - **Skills are versioned** per tenant per robot (history retained → rollback), seeded from Joe's templates at tenant creation. Sets up the P2-A self-learning loop (D22).
+  - **Tenants are admin-provisioned** by Kevin/Joe (create tenant + seed skills + help obtain the client's key), not self-serve signup — consistent with the agent-installed, not-hosted-SaaS product model.
+  - **No fallback key.** Per the BYO decision, there is deliberately no shared env key, no filesystem skill, and no stub fallback in the app draft path: a tenant with no key gets a "set it up" state pointing at Settings. A "we handle the key" tier could be added later but is a business-model decision (metering/billing), not built now.
+- **Why:** BYO key keeps usage on the client's bill (no metering/billing ops, no cost risk) and honors "each agent brings their own Claude." In-memory-first keeps us unblocked and lets the interface be contract-tested before the Postgres swap.
+- **Revisit when:** Railway Postgres is provisioned (add `PostgresTenantStore` behind the same interface + contract tests); or if a shared-key/metered tier is ever offered (wire the fallback seam + usage accounting — a business-model decision, not just technical).

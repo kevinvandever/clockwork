@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getApp } from "@/lib/app";
+import { getApp, DEMO_TENANT } from "@/lib/app";
 import { getActor } from "@/lib/session";
 import { loginAction } from "./actions";
 
@@ -35,14 +35,18 @@ export default async function LoginPage({ searchParams }: PageProps) {
           <label className="flex items-center gap-1.5 text-sm">
             <input
               type="radio"
-              name="userId"
-              value={app.agentId}
+              name="principal"
+              value={`${DEMO_TENANT}:${app.agentId}`}
               defaultChecked
             />
             Joe (agent)
           </label>
           <label className="flex items-center gap-1.5 text-sm">
-            <input type="radio" name="userId" value={app.clientId} />
+            <input
+              type="radio"
+              name="principal"
+              value={`${DEMO_TENANT}:${app.clientId}`}
+            />
             Cal (client)
           </label>
         </div>

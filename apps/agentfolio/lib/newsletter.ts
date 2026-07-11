@@ -1,43 +1,15 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import {
   InMemoryNewsletterDraftStore,
   NewsletterOrchestrator,
   ClaudeMarketingDrafter,
-  StubMarketingDrafter,
   type NewsletterDraftStore,
 } from "@clockwork/marketing";
-
-/**
- * Load the newsletter-draft skill instructions from the filesystem.
- * Same pattern as install/skills.ts — read once at startup.
- */
-function loadSkillInstructions(): string {
-  // Resolve relative to repo root (two levels up from apps/agentfolio/)
-  const skillPath = resolve(
-    process.cwd(),
-    "../../skills/newsletter-draft.md",
-  );
-  try {
-    return readFileSync(skillPath, "utf-8");
-  } catch {
-    // Fallback: try from CWD (if running from repo root)
-    try {
-      return readFileSync(
-        resolve(process.cwd(), "skills/newsletter-draft.md"),
-        "utf-8",
-      );
-    } catch {
-      return "";
-    }
-  }
-}
+import { getTenantStore } from "./app";
 
 // --- Singleton caching (same pattern as lib/app.ts) ---
 
 const globalForNewsletter = globalThis as unknown as {
   __newsletterStore?: InMemoryNewsletterDraftStore;
-  __skillInstructions?: string;
 };
 
 /** Process-wide singleton store for newsletter drafts. */
@@ -48,27 +20,41 @@ export function getNewsletterStore(): NewsletterDraftStore {
   return globalForNewsletter.__newsletterStore;
 }
 
-/** Load skill instructions (cached). */
-function getSkillInstructions(): string {
-  if (globalForNewsletter.__skillInstructions === undefined) {
-    globalForNewsletter.__skillInstructions = loadSkillInstructions();
-  }
-  return globalForNewsletter.__skillInstructions;
+/** A tenant-scoped orchestrator plus the resolved key used to drive it. */
+export interface ResolvedOrchestrator {
+  orchestrator: NewsletterOrchestrator;
+  apiKey: string;
 }
 
 /**
- * Create a NewsletterOrchestrator with the appropriate drafter.
- * Uses ClaudeMarketingDrafter when ANTHROPIC_API_KEY is set, StubMarketingDrafter otherwise.
+ * Resolve a newsletter orchestrator for one tenant (BYO — no fallbacks).
+ *
+ * The Anthropic API key and the marketing skill text both come from the tenant
+ * registry. If the tenant hasn't set their key yet, returns null so the caller
+ * can show the setup-needed state — there is deliberately no shared env key, no
+ * filesystem skill, and no stub fallback in this path.
  */
-export function getOrchestrator(): NewsletterOrchestrator {
-  const store = getNewsletterStore();
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? "";
-  const skillInstructions = getSkillInstructions();
+export async function getOrchestrator(
+  tenantId: string,
+): Promise<ResolvedOrchestrator | null> {
+  const tenantStore = await getTenantStore();
 
-  const drafter =
-    apiKey.trim() !== ""
-      ? new ClaudeMarketingDrafter({ apiKey, skillInstructions })
-      : new StubMarketingDrafter();
+  const apiKey = await tenantStore.getApiKey(tenantId);
+  if (!apiKey || apiKey.trim() === "") {
+    return null;
+  }
 
-  return new NewsletterOrchestrator({ store, drafter });
+  const skill = await tenantStore.getSkill(tenantId, "marketing");
+  const drafter = new ClaudeMarketingDrafter({
+    apiKey,
+    skillInstructions: skill?.text,
+  });
+
+  return {
+    orchestrator: new NewsletterOrchestrator({
+      store: getNewsletterStore(),
+      drafter,
+    }),
+    apiKey,
+  };
 }

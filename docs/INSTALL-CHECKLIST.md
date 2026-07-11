@@ -50,15 +50,33 @@ on stand-ins and is the template for the real smoke test.
 ## 5. Deploy (when hosting)
 
 - [ ] Watcher + agentfolio on Railway; managed Postgres for the durable stores.
-- [ ] Per-client secrets (CRM token, Anthropic key, intake tokens) in the platform.
+- [ ] Platform env vars (agentfolio): `SESSION_SECRET` (signs login cookies),
+      `AGENT_PASSWORD` (the agent's login), `KEY_ENCRYPTION_SECRET` (encrypts
+      per-tenant Anthropic keys at rest). Generate each with
+      `openssl rand -base64 32`.
+- [ ] Per-client secrets (CRM token, intake tokens) in the platform. The tenant's
+      **Anthropic key is BYO** — the agent enters it in agentfolio **Settings**
+      (stored encrypted); it is not an env var.
+
+## 6. Provision the tenant (agentfolio, multi-tenant)
+
+Clockwork is admin-provisioned (not self-serve). Per agent:
+
+- [ ] Provision a tenant (`provisionTenant` in `@clockwork/tenants`): `displayName`,
+      optional `personaOverrides`, and seed skill text from `skills/*.md`.
+- [ ] Create the agent's user + set `AGENT_PASSWORD`.
+- [ ] Have the agent log in and paste their **Anthropic API key** in **Settings**
+      (encrypted at rest, bound to their `tenantId`). They can also rename robots
+      and edit skills there.
 
 ## Stand-ins → real (swap map)
 
 | Piece | Stand-in now | Real (swap) |
 |-------|--------------|-------------|
 | CRM | `MockCrmConnector` | `RechatConnector` (config flip) |
-| Drafting | Stub responders | Claude (set `ANTHROPIC_API_KEY`) |
+| Drafting | Stub responders | Claude (per-tenant BYO key via Settings) |
 | Lead source | shared-secret `/inbound` | Outlook/Gmail (Graph/push) |
 | Stores | in-memory | Postgres on Railway |
+| Tenant registry | `InMemoryTenantStore` | `PostgresTenantStore` (same interface) |
 | Records | Stub provider | NYC Open Data / ACRIS (`acris-property-pull.md` blueprint) |
-| Auth (agentfolio) | unsigned cookie | real auth (Auth.js/Clerk) |
+| Auth (agentfolio) | HMAC-signed cookie + password | richer auth (Auth.js/Clerk) if multi-user per tenant |
