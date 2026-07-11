@@ -18,9 +18,9 @@ import {
 import {
   ClaudeMarketingDrafter,
   StubMarketingDrafter,
-  runMarketingNewsletter,
   type MarketingDrafter,
-  type MarketingRunResult,
+  type NewsletterDraft,
+  type StoryInput,
 } from "@clockwork/marketing";
 import {
   ClaudeClientCareDrafter,
@@ -74,10 +74,8 @@ export interface Install {
   usingClaude: boolean;
   /** Pipeline (Josh 2) instant-response handler. */
   handleLead: LeadHandler;
-  runMarketing(opts?: {
-    context?: string;
-    segment?: string;
-  }): Promise<MarketingRunResult>;
+  /** Marketing (Dave) — draft one newsletter from an anchor story. */
+  draftNewsletter(input: StoryInput): Promise<NewsletterDraft>;
   runClientCare(opts?: {
     today?: Date;
     segment?: string;
@@ -150,16 +148,8 @@ export function createInstall(input: InstallConfig): Install {
     agentfolioStore,
     usingClaude,
     handleLead,
-    runMarketing: (opts = {}) =>
-      runMarketingNewsletter({
-        tenantId: input.tenantId,
-        connector,
-        persona: config.personas.marketing,
-        drafter: marketingDrafter,
-        activityLog,
-        context: opts.context,
-        segment: opts.segment,
-      }),
+    draftNewsletter: (input: StoryInput) =>
+      marketingDrafter.draftNewsletter(input),
     runClientCare: (opts = {}) =>
       runClientCare({
         tenantId: input.tenantId,

@@ -1,38 +1,30 @@
-import { AI_DISCLOSURE } from "@clockwork/connector-core";
 import type {
   MarketingDrafter,
   NewsletterDraft,
-  NewsletterInput,
+  StoryInput,
 } from "./drafter.js";
 
 /**
  * Deterministic newsletter drafter. Default everywhere so tests are hermetic and the
- * demo runs without credentials. Uses the resolved persona name in the sign-off.
+ * demo runs without credentials. Returns a realistic draft shape with a real word count.
  */
 export class StubMarketingDrafter implements MarketingDrafter {
-  async draftNewsletter({
-    persona,
-    context,
-  }: NewsletterInput): Promise<NewsletterDraft> {
-    const topic = context?.trim() || "this month's local market update";
-    const subject = `${capitalize(topic)} from your agent`;
+  async draftNewsletter(input: StoryInput): Promise<NewsletterDraft> {
+    const headline = `Stub headline for ${input.kind} story`;
     const body = [
-      "Hi there,",
+      "The local market continues to evolve this season.",
+      `Based on the provided ${input.kind}, here is a quick take on what matters`,
+      "for your townhouse audience. Inventory is shifting, pricing is adjusting,",
+      "and the opportunity window is real for those paying attention.",
       "",
-      `A quick note with ${topic}. Inventory, pricing, and what it means if ` +
-        "you're thinking about a move this season.",
-      "",
-      "Reply anytime if you'd like to talk through your options — always happy to help.",
-      "",
-      "Best,",
-      persona.name,
-      "",
-      AI_DISCLOSURE,
+      "Reply anytime — always happy to talk through what this means for you.",
     ].join("\n");
-    return { subject, body };
-  }
-}
+    const wordCount = body.split(/\s+/).filter(Boolean).length;
+    const editorNotes = [
+      "Verify local inventory figures before publishing.",
+      "Confirm pricing trend direction with MLS data.",
+    ];
 
-function capitalize(s: string): string {
-  return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1);
+    return { headline, body, wordCount, editorNotes, status: "ready" };
+  }
 }

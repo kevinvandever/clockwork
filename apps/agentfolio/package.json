@@ -14,6 +14,7 @@
     "@clockwork/activity-log": "workspace:*",
     "@clockwork/agentfolio-connect": "workspace:*",
     "@clockwork/agentfolio-core": "workspace:*",
+    "@clockwork/marketing": "workspace:*",
     "@clockwork/records": "workspace:*",
     "next": "^15.1.6",
     "react": "^19.0.0",

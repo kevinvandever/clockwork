@@ -1,37 +1,23 @@
-import { resolveAllPersonas } from "@clockwork/config";
-import { MockCrmConnector } from "@clockwork/connector-core";
-import { InMemoryActivityLog } from "@clockwork/activity-log";
-import { runMarketingNewsletter } from "./run.js";
 import { StubMarketingDrafter } from "./stub.js";
 
-/** On-demand Marketing run against a seeded mock sphere (local demo). */
+/** Draft a newsletter from a stub story (local demo, no credentials). */
 async function main(): Promise<void> {
-  const tenantId = "tenant-joe";
-  const connector = new MockCrmConnector(tenantId);
-  await connector.createContact({ email: "amy@example.com", name: "Amy", segment: "sphere" });
-  await connector.createContact({ email: "ben@example.com", name: "Ben", segment: "sphere" });
-  await connector.createContact({ phone: "212-555-0000", name: "No Email", segment: "sphere" });
-  await connector.createContact({ email: "lead@example.com", name: "Fresh Lead", segment: "lead" });
-
-  const activityLog = new InMemoryActivityLog();
-  const persona = resolveAllPersonas().marketing;
-
-  const result = await runMarketingNewsletter({
-    tenantId,
-    connector,
-    persona,
-    drafter: new StubMarketingDrafter(),
-    activityLog,
-    context: "spring market update",
-    segment: "sphere",
+  const drafter = new StubMarketingDrafter();
+  const draft = await drafter.draftNewsletter({
+    kind: "notes",
+    value: "spring market update — inventory shifting, townhouse demand strong",
   });
 
-  console.log(
-    `[marketing] ${persona.name} sent to ${result.sentCount}/${result.recipientCount} sphere contacts`,
-  );
-  console.log(`Subject: ${result.draft.subject}`);
+  console.log(`[marketing] Draft status: ${draft.status}`);
+  console.log(`Headline: ${draft.headline}`);
+  console.log(`Word count: ${draft.wordCount}`);
   console.log("---");
-  console.log(result.draft.body);
+  console.log(draft.body);
+  console.log("---");
+  console.log("Editor notes:");
+  for (const note of draft.editorNotes) {
+    console.log(`  • ${note}`);
+  }
 }
 
 main().catch((err) => {

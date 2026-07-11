@@ -1,27 +1,36 @@
 import { describe, it, expect } from "vitest";
-import { resolveAllPersonas } from "@clockwork/config";
-import { AI_DISCLOSURE } from "@clockwork/connector-core";
 import { StubMarketingDrafter } from "./stub.js";
-
-const marketing = resolveAllPersonas().marketing; // "Dave"
+import type { StoryInput } from "./drafter.js";
 
 describe("StubMarketingDrafter", () => {
-  it("signs off as the persona and includes the disclosure", async () => {
-    const draft = await new StubMarketingDrafter().draftNewsletter({
-      persona: marketing,
-      audienceSize: 10,
-    });
-    expect(draft.body).toContain("Dave");
-    expect(draft.body).toContain(AI_DISCLOSURE);
-    expect(draft.subject.length).toBeGreaterThan(0);
+  const drafter = new StubMarketingDrafter();
+
+  it("returns a ready draft with headline, body, wordCount, and editorNotes", async () => {
+    const input: StoryInput = { kind: "text", value: "article about spring market" };
+    const draft = await drafter.draftNewsletter(input);
+
+    expect(draft.status).toBe("ready");
+    expect(draft.headline.length).toBeGreaterThan(0);
+    expect(draft.body.length).toBeGreaterThan(0);
+    expect(draft.wordCount).toBeGreaterThan(0);
+    expect(draft.editorNotes.length).toBeGreaterThan(0);
+    expect(draft.refusalReason).toBeUndefined();
   });
 
-  it("uses the provided context in the subject", async () => {
-    const draft = await new StubMarketingDrafter().draftNewsletter({
-      persona: marketing,
-      context: "spring market update",
-      audienceSize: 5,
-    });
-    expect(draft.subject.toLowerCase()).toContain("spring market update");
+  it("wordCount reflects the actual body word count", async () => {
+    const input: StoryInput = { kind: "notes", value: "market notes" };
+    const draft = await drafter.draftNewsletter(input);
+
+    const actualWords = draft.body.split(/\s+/).filter(Boolean).length;
+    expect(draft.wordCount).toBe(actualWords);
+  });
+
+  it("handles each input kind", async () => {
+    const kinds = ["url", "text", "notes"] as const;
+    for (const kind of kinds) {
+      const draft = await drafter.draftNewsletter({ kind, value: "test value" });
+      expect(draft.status).toBe("ready");
+      expect(draft.headline).toContain(kind);
+    }
   });
 });

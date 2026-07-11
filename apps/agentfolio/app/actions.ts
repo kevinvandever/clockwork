@@ -4,13 +4,25 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { Stage } from "@clockwork/agentfolio-core";
 import { getApp } from "@/lib/app";
-import { clearSession, getActor, setSession } from "@/lib/session";
+import { clearSession, getActor, setSession, verifyPassword } from "@/lib/session";
 
 export async function loginAction(formData: FormData): Promise<void> {
   const userId = String(formData.get("userId") ?? "");
-  if (userId) {
-    await setSession(userId);
+  const password = String(formData.get("password") ?? "");
+
+  if (!userId) {
+    redirect("/");
+    return;
   }
+
+  // Verify password — in dev mode without AGENT_PASSWORD set, this passes
+  // for backwards compat. In production, the password must match.
+  if (!verifyPassword(password)) {
+    redirect("/?error=invalid");
+    return;
+  }
+
+  await setSession(userId);
   redirect("/boards");
 }
 

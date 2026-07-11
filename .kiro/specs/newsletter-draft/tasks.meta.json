@@ -1,0 +1,230 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Reshape the marketing drafter to a single-anchor-story newsletter contract": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845294
+      },
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717852386
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435293
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718442384
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718783623
+      }
+    ],
+    "2. Implement the Claude newsletter drafter with output parsing and refusal": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845324
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435322
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718789838
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719204176
+      }
+    ],
+    "3. Build the Story_Resolver": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845360
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435353
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719210159
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719341591
+      }
+    ],
+    "4. Create the tenant-tagged NewsletterDraft store": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845381
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435384
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719344622
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719493359
+      }
+    ],
+    "5. Implement the draft orchestration service": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845407
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435406
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719496575
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719712647
+      }
+    ],
+    "6. Wire Skill_Instructions loading": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845438
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435425
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719715778
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719876799
+      }
+    ],
+    "7. Add the agentfolio `/newsletter` route with all states": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845456
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435442
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783719879949
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720132377
+      }
+    ],
+    "8. Capture disposition and timestamps": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845478
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435460
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720135718
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720255878
+      }
+    ],
+    "9. Gate the route behind real auth": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845497
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435482
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720260013
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720561188
+      }
+    ],
+    "10. End-to-end wiring and verification": [
+      {
+        "executionId": "4e1c4d45-0e6b-413d-aa10-cd9de8f82957",
+        "chatSessionId": "sess_97e29c3e-f5d0-4fb0-a365-6d744617326b",
+        "timestamp": 1783717845519
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783718435501
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720565126
+      },
+      {
+        "executionId": "4e7d258f-93bf-4e6f-8723-3a44656d576b",
+        "chatSessionId": "sess_6fe0c543-97bb-4492-92f0-55f27f62428f",
+        "timestamp": 1783720737182
+      }
+    ]
+  }
+}

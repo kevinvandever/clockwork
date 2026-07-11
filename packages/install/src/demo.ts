@@ -74,13 +74,13 @@ async function main(): Promise<void> {
   });
 
   // 2) Marketing -----------------------------------------------------------
-  hr("2) Marketing (Dave) sends the sphere newsletter");
-  const mk = await install.runMarketing({
-    context: "spring townhouse market update",
-    segment: "sphere",
+  hr("2) Marketing (Dave) drafts a newsletter from an anchor story");
+  const mk = await install.draftNewsletter({
+    kind: "notes",
+    value: "spring townhouse market update — inventory shifting, demand strong",
   });
   console.log(
-    `Dave drafted "${mk.draft.subject}" → sent to ${mk.sentCount}/${mk.recipientCount} sphere contacts`,
+    `Dave drafted "${mk.headline}" (${mk.wordCount} words, status: ${mk.status})`,
   );
 
   // 3) Client Care ---------------------------------------------------------

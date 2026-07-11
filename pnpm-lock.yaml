@@ -41,6 +41,9 @@ importers:
       '@clockwork/agentfolio-core':
         specifier: workspace:*
         version: link:../../packages/agentfolio-core
+      '@clockwork/marketing':
+        specifier: workspace:*
+        version: link:../../packages/marketing
       '@clockwork/records':
         specifier: workspace:*
         version: link:../../packages/records
@@ -157,17 +160,7 @@ importers:
         specifier: workspace:*
         version: link:../records
 
-  packages/marketing:
-    dependencies:
-      '@clockwork/activity-log':
-        specifier: workspace:*
-        version: link:../activity-log
-      '@clockwork/config':
-        specifier: workspace:*
-        version: link:../config
-      '@clockwork/connector-core':
-        specifier: workspace:*
-        version: link:../connector-core
+  packages/marketing: {}
 
   packages/pipeline:
     dependencies:

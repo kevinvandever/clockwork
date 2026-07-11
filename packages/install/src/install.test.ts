@@ -28,12 +28,12 @@ describe("createInstall (stub mode)", () => {
     expect(activity.some((a) => a.action === "instant_response_sent")).toBe(true);
   });
 
-  it("runs Marketing against the sphere", async () => {
+  it("drafts a newsletter from an anchor story", async () => {
     const app = install();
-    await app.connector.createContact({ email: "a@x.com", segment: "sphere" });
-    await app.connector.createContact({ email: "b@x.com", segment: "sphere" });
-    const result = await app.runMarketing({ segment: "sphere" });
-    expect(result.sentCount).toBe(2);
+    const draft = await app.draftNewsletter({ kind: "notes", value: "spring market" });
+    expect(draft.status).toBe("ready");
+    expect(draft.headline.length).toBeGreaterThan(0);
+    expect(draft.wordCount).toBeGreaterThan(0);
   });
 
   it("connects agentfolio into the same activity log", async () => {

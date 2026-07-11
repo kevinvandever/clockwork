@@ -1,17 +1,16 @@
 export type {
   MarketingDrafter,
   NewsletterDraft,
-  NewsletterInput,
+  StoryInput,
 } from "./drafter.js";
 export { StubMarketingDrafter } from "./stub.js";
 export {
   ClaudeMarketingDrafter,
   DEFAULT_MODEL,
-  buildPrompt,
+  parseSkillOutput,
   type ClaudeMarketingOptions,
 } from "./claude.js";
-export {
-  runMarketingNewsletter,
-  type RunMarketingDeps,
-  type MarketingRunResult,
-} from "./run.js";
+export { resolveStory, type ResolveResult, type ResolveOptions } from "./resolver.js";
+export type { NewsletterDraftRecord, NewsletterDraftStore } from "./store.js";
+export { InMemoryNewsletterDraftStore } from "./store.js";
+export { NewsletterOrchestrator, type SubmitResult, type OrchestratorDeps } from "./orchestrate.js";
