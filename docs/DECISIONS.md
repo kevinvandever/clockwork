@@ -191,3 +191,16 @@ Newest at the bottom. Lightweight by design — one entry per real decision.
   - **No fallback key.** Per the BYO decision, there is deliberately no shared env key, no filesystem skill, and no stub fallback in the app draft path: a tenant with no key gets a "set it up" state pointing at Settings. A "we handle the key" tier could be added later but is a business-model decision (metering/billing), not built now.
 - **Why:** BYO key keeps usage on the client's bill (no metering/billing ops, no cost risk) and honors "each agent brings their own Claude." In-memory-first keeps us unblocked and lets the interface be contract-tested before the Postgres swap.
 - **Revisit when:** Railway Postgres is provisioned (add `PostgresTenantStore` behind the same interface + contract tests); or if a shared-key/metered tier is ever offered (wire the fallback seam + usage accounting — a business-model decision, not just technical).
+
+### D27 — Railway hosting topology: single always-on app + managed Postgres; watcher as a second service; `@clockwork/db` adapter
+
+- **Context:** Time to deploy. TASK-01 settled "we host a single multi-tenant app + managed Postgres." Question was the concrete platform/topology and how the Postgres swap lands without disturbing local dev/tests.
+- **Decision:**
+  - **Everything on Railway** (not a Railway/Netlify split). The agentfolio Next.js app runs as a normal always-on Node service (`next start`, binds `$PORT`), co-located with managed Postgres — one operational footprint per TASK-01. Netlify was declined because serverless would break the in-process singletons and force connection pooling; Railway's always-on model fits the current shape.
+  - **`@clockwork/db` adapter package** holds the `pg` pool, inlined idempotent migrations (`_migrations` table), and Postgres implementations of the four store interfaces (tenant, newsletter-draft, agentfolio, activity-log). Domain packages stay `pg`-free.
+  - **Backend is chosen at runtime:** Postgres when `DATABASE_URL` is set, in-memory otherwise. Local dev + CI stay in-memory (Postgres integration tests are gated on `TEST_DATABASE_URL`, skipped without it). Migrations run on boot; the demo seed is idempotent.
+  - **Watcher deploys later, as its own Railway service** (`services/watcher/railway.json`), when the speed-to-lead slice is ready (needs Outlook/Graph + Joe's Pipeline skill). Not stood up now — an idle always-on watcher has nothing real to watch.
+  - **Deploy env vars:** `SESSION_SECRET`, `AGENT_PASSWORD`, `KEY_ENCRYPTION_SECRET`, `DATABASE_URL` (Railway-provided). `KEY_ENCRYPTION_SECRET` must be stable — rotating it strands every encrypted key.
+  - **Tenants are provisioned via the `@clockwork/db` CLI** (`provision`), not self-serve.
+- **Why:** Always-on Node + managed Postgres is the lowest-friction fit for a stateful multi-tenant web app and matches the settled recommendation. The adapter package keeps the swap seam clean and the domain packages pure.
+- **Revisit when:** per-agent password hashing replaces the shared `AGENT_PASSWORD` (needed before unrelated agents share one deployment); the watcher's real inbox lands (stand up service #2, consider Postgres-backed dedup); or a read-replica/pooler is needed at scale.

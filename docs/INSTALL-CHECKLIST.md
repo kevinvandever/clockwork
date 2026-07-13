@@ -58,16 +58,48 @@ on stand-ins and is the template for the real smoke test.
       **Anthropic key is BYO** — the agent enters it in agentfolio **Settings**
       (stored encrypted); it is not an env var.
 
-## 6. Provision the tenant (agentfolio, multi-tenant)
+## 6. Deploy on Railway (settled topology — DECISIONS D27)
 
-Clockwork is admin-provisioned (not self-serve). Per agent:
+Everything runs on Railway: the app as an always-on Node service + managed Postgres
+(one footprint). The watcher is a separate service added later (speed-to-lead slice).
 
-- [ ] Provision a tenant (`provisionTenant` in `@clockwork/tenants`): `displayName`,
-      optional `personaOverrides`, and seed skill text from `skills/*.md`.
-- [ ] Create the agent's user + set `AGENT_PASSWORD`.
-- [ ] Have the agent log in and paste their **Anthropic API key** in **Settings**
+- [ ] New Railway project → Deploy from the GitHub repo. Railway reads the root
+      `railway.json` (Nixpacks build `pnpm build`, start `pnpm --filter
+      @clockwork/agentfolio start`, healthcheck `/health`).
+- [ ] Add PostgreSQL to the project (Railway injects `DATABASE_URL`).
+- [ ] Set service variables: `SESSION_SECRET`, `AGENT_PASSWORD`,
+      `KEY_ENCRYPTION_SECRET` (each `openssl rand -base64 32`), and reference
+      `DATABASE_URL` from the Postgres plugin. **`KEY_ENCRYPTION_SECRET` must never
+      change** — rotating it strands every encrypted API key.
+- [ ] Deploy. Migrations run automatically on boot; the demo tenant is seeded
+      idempotently. Hit `/health` and the login page to confirm.
+
+## 7. Provision tenants (admin-provisioned, not self-serve)
+
+Per agent (run against the deployed Postgres — set `DATABASE_URL` +
+`KEY_ENCRYPTION_SECRET` in the shell, or run inside the Railway service shell):
+
+```bash
+pnpm --filter @clockwork/db provision -- \
+  --name "Kevin's Practice" --email kevin@example.com --agent-name "Kevin"
+# optional: --tenant <id>  --api-key sk-ant-...
+```
+
+- [ ] Provision your own tenant first (dogfood), then Joe's.
+- [ ] The agent logs in at the app root with their **email + the deployment's
+      `AGENT_PASSWORD`**, then pastes their **Anthropic API key** in **Settings**
       (encrypted at rest, bound to their `tenantId`). They can also rename robots
       and edit skills there.
+
+> Note: `AGENT_PASSWORD` is currently one shared access password for the whole
+> deployment. Fine for a trusted dogfood (you + Joe); harden to per-agent password
+> hashing before onboarding unrelated agents (DECISIONS D27 revisit).
+
+## 8. Watcher (later — speed-to-lead slice)
+
+Deferred until Outlook/Graph access + Joe's Pipeline skill exist. When ready, add a
+second Railway service pointing its config path at `services/watcher/railway.json`,
+set `INTAKE_TOKENS`, and point the inbox/CRM webhook at `POST /inbound`.
 
 ## Stand-ins → real (swap map)
 
