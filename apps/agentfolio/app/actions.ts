@@ -7,31 +7,30 @@ import { getApp } from "@/lib/app";
 import { clearSession, getActor, setSession, verifyPassword } from "@/lib/session";
 
 export async function loginAction(formData: FormData): Promise<void> {
-  // The login form supplies a `tenantId:userId` pair so one deployment can
-  // serve multiple tenants. Both are re-signed into the session cookie.
-  const principal = String(formData.get("principal") ?? "");
+  // Email + password login. The email resolves the user (and thus their tenant)
+  // across the whole deployment; the tenant is then re-signed into the cookie.
+  const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  const sepIdx = principal.indexOf(":");
-  if (sepIdx === -1) {
-    redirect("/");
-    return;
-  }
-  const tenantId = principal.slice(0, sepIdx);
-  const userId = principal.slice(sepIdx + 1);
-  if (!tenantId || !userId) {
-    redirect("/");
+  if (!email) {
+    redirect("/?error=invalid");
     return;
   }
 
-  // Verify password — in dev mode without AGENT_PASSWORD set, this passes
-  // for backwards compat. In production, the password must match.
+  // Verify the shared access password first (dev mode allows blank).
   if (!verifyPassword(password)) {
     redirect("/?error=invalid");
     return;
   }
 
-  await setSession(tenantId, userId);
+  const { store } = await getApp();
+  const user = await store.getUserByEmail(email);
+  if (!user) {
+    redirect("/?error=invalid");
+    return;
+  }
+
+  await setSession(user.tenantId, user.id);
   redirect("/boards");
 }
 

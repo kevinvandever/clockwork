@@ -65,6 +65,12 @@ export interface AddCommentInput {
 export interface AgentfolioStore {
   createUser(input: CreateUserInput): Promise<User>;
   getUser(tenantId: string, id: string): Promise<User | null>;
+  /**
+   * Global identity lookup for authentication only. Login must resolve who is
+   * signing in before a tenant is known, so this is the one intentional
+   * non-tenant-scoped read. Email is treated as unique across the system.
+   */
+  getUserByEmail(email: string): Promise<User | null>;
 
   createBoard(input: CreateBoardInput): Promise<Board>;
   getBoard(tenantId: string, id: string): Promise<Board | null>;
@@ -125,6 +131,11 @@ export class InMemoryAgentfolioStore implements AgentfolioStore {
 
   async getUser(tenantId: string, id: string): Promise<User | null> {
     return this.users.find((u) => u.tenantId === tenantId && u.id === id) ?? null;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const target = email.toLowerCase();
+    return this.users.find((u) => u.email.toLowerCase() === target) ?? null;
   }
 
   async createBoard(input: CreateBoardInput): Promise<Board> {

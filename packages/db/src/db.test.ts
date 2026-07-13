@@ -167,6 +167,20 @@ run("Postgres stores (integration)", () => {
       expect(props).toHaveLength(1);
     });
 
+    it("resolves a user by email (case-insensitive) for auth", async () => {
+      const s = store();
+      const u = await s.createUser({
+        tenantId: "t1",
+        role: "agent",
+        name: "Joe",
+        email: "Joe@Example.com",
+      });
+      const found = await s.getUserByEmail("joe@example.com");
+      expect(found?.id).toBe(u.id);
+      expect(found?.tenantId).toBe("t1");
+      expect(await s.getUserByEmail("nobody@example.com")).toBeNull();
+    });
+
     it("throws not_found updating a missing property", async () => {
       const s = store();
       await expect(

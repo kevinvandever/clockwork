@@ -15,7 +15,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "migrate": "node dist/migrate-cli.js"
+    "migrate": "node dist/migrate-cli.js",
+    "provision": "node dist/provision-cli.js"
   },
   "dependencies": {
     "@clockwork/activity-log": "workspace:*",
