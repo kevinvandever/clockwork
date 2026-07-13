@@ -8,6 +8,7 @@ import { getActor } from "@/lib/session";
 import { getTenantStore } from "@/lib/app";
 import {
   setApiKeyAction,
+  removeApiKeyAction,
   setPersonaNamesAction,
   setSkillAction,
 } from "./actions";
@@ -102,6 +103,17 @@ export default async function SettingsPage({ searchParams }: PageProps) {
             </button>
           </div>
         </form>
+
+        {hasKey && (
+          <form action={removeApiKeyAction}>
+            <button
+              type="submit"
+              className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+            >
+              Remove key
+            </button>
+          </form>
+        )}
       </section>
 
       {/* --- Robot names --- */}
@@ -199,6 +211,8 @@ function savedMessage(saved: string): string {
   switch (saved) {
     case "key":
       return "API key saved.";
+    case "key_removed":
+      return "API key removed.";
     case "names":
       return "Robot names saved.";
     case "skill":

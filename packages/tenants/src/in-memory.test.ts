@@ -80,6 +80,15 @@ describe("InMemoryTenantStore — API key (encrypted at rest)", () => {
     expect(await store.getApiKey("t1")).toBeUndefined();
   });
 
+  it("clearApiKey removes a set key (and is a no-op when none)", async () => {
+    await store.clearApiKey("t1"); // no-op, no throw
+    await store.setApiKey("t1", "sk-ant-secret");
+    expect(await store.hasApiKey("t1")).toBe(true);
+    await store.clearApiKey("t1");
+    expect(await store.hasApiKey("t1")).toBe(false);
+    expect(await store.getApiKey("t1")).toBeUndefined();
+  });
+
   it("trims and rejects an empty key", async () => {
     await expect(store.setApiKey("t1", "   ")).rejects.toThrow(TenantError);
     await store.setApiKey("t1", "  sk-trimmed  ");

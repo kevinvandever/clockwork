@@ -84,6 +84,12 @@ export class InMemoryTenantStore implements TenantStore {
     return Boolean(this.require(tenantId).encryptedApiKey);
   }
 
+  async clearApiKey(tenantId: string): Promise<void> {
+    const t = this.require(tenantId);
+    t.encryptedApiKey = undefined;
+    t.updatedAt = new Date().toISOString();
+  }
+
   async setPersonaOverrides(
     tenantId: string,
     overrides: PersonaOverrides,

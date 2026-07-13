@@ -30,6 +30,17 @@ export async function setApiKeyAction(formData: FormData): Promise<void> {
 }
 
 /**
+ * Remove the tenant's stored Anthropic API key (revoke). Used to clear a key
+ * before handing a tenant to someone else, or to rotate cleanly.
+ */
+export async function removeApiKeyAction(): Promise<void> {
+  const tenantId = await requireAgentTenant();
+  const tenantStore = await getTenantStore();
+  await tenantStore.clearApiKey(tenantId);
+  redirect("/settings?saved=key_removed");
+}
+
+/**
  * Update per-robot persona name overrides. Blank fields fall back to the roster
  * default (we simply omit them from the stored overrides).
  */

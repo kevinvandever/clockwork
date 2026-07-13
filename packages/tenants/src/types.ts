@@ -73,6 +73,8 @@ export interface TenantStore {
   getApiKey(tenantId: string): Promise<string | undefined>;
   /** Whether a key is set — safe for the browser (no secret material). */
   hasApiKey(tenantId: string): Promise<boolean>;
+  /** Remove the stored API key (revoke). No-op if none is set. */
+  clearApiKey(tenantId: string): Promise<void>;
 
   setPersonaOverrides(
     tenantId: string,

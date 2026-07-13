@@ -53,6 +53,16 @@ run("Postgres stores (integration)", () => {
       expect(rows[0].encrypted_api_key).not.toContain("sk-ant-secret");
     });
 
+    it("clearApiKey revokes a stored key", async () => {
+      const s = store();
+      await s.createTenant({ tenantId: "t1", displayName: "T1" });
+      await s.setApiKey("t1", "sk-ant-secret");
+      expect(await s.hasApiKey("t1")).toBe(true);
+      await s.clearApiKey("t1");
+      expect(await s.hasApiKey("t1")).toBe(false);
+      expect(await s.getApiKey("t1")).toBeUndefined();
+    });
+
     it("rejects duplicate tenantId with already_exists", async () => {
       const s = store();
       await s.createTenant({ tenantId: "dup", displayName: "One" });

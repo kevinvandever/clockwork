@@ -158,6 +158,14 @@ export class PostgresTenantStore implements TenantStore {
     return Boolean(row.encrypted_api_key);
   }
 
+  async clearApiKey(tenantId: string): Promise<void> {
+    await this.requireRow(tenantId);
+    await this.pool.query(
+      `update tenants set encrypted_api_key = null, updated_at = $2 where tenant_id = $1`,
+      [tenantId, new Date().toISOString()],
+    );
+  }
+
   async setPersonaOverrides(
     tenantId: string,
     overrides: PersonaOverrides,
