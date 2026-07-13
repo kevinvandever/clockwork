@@ -3,6 +3,7 @@ import { getActor } from "@/lib/session";
 import { getNewsletterStore } from "@/lib/newsletter";
 import { submitStoryAction, setDispositionAction } from "./actions";
 import { CopyButton } from "./copy-button";
+import { SubmitButton } from "./submit-button";
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -64,9 +65,24 @@ export default async function NewsletterPage({ searchParams }: PageProps) {
 
 // --- State Components ---
 
+/** Persistent nav so there's always a way back to the app. */
+function TopNav() {
+  return (
+    <nav className="flex gap-4 text-sm text-zinc-500">
+      <a href="/boards" className="underline hover:text-zinc-800">
+        Boards
+      </a>
+      <a href="/settings" className="underline hover:text-zinc-800">
+        Settings
+      </a>
+    </nav>
+  );
+}
+
 function EmptyState({ kind, value }: { kind?: string; value?: string }) {
   return (
     <main className="space-y-6">
+      <TopNav />
       <header>
         <h1 className="text-2xl font-semibold">Newsletter Draft</h1>
         <p className="text-zinc-600">
@@ -120,12 +136,10 @@ function EmptyState({ kind, value }: { kind?: string; value?: string }) {
           className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
 
-        <button
-          type="submit"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm text-white"
-        >
-          Draft it
-        </button>
+        <SubmitButton pendingText="Drafting…">Draft it</SubmitButton>
+        <p className="text-xs text-zinc-400">
+          Drafting calls Claude and can take up to a minute.
+        </p>
       </form>
     </main>
   );
@@ -147,6 +161,7 @@ function DraftReadyState({
 }) {
   return (
     <main className="space-y-6">
+      <TopNav />
       <header>
         <h1 className="text-2xl font-semibold">Newsletter Draft</h1>
       </header>
@@ -230,6 +245,7 @@ function DraftReadyState({
 function RefusalState({ reason }: { reason?: string }) {
   return (
     <main className="space-y-6">
+      <TopNav />
       <header>
         <h1 className="text-2xl font-semibold">Newsletter Draft</h1>
       </header>
@@ -258,14 +274,9 @@ function ErrorState({
 }: {
   record: { input: { kind: string; value: string }; id: string };
 }) {
-  const isRateLimit =
-    record.id !== undefined; // we check the record exists — rate limit is a specific error stored on the record
-  // Actually, let's check if there's extra info. The record doesn't store the error message directly.
-  // The orchestrator stores status "error" — we can infer rate limit from context but the record
-  // doesn't have a specific field for it. For now, show a general error with retry.
-
   return (
     <main className="space-y-6">
+      <TopNav />
       <header>
         <h1 className="text-2xl font-semibold">Newsletter Draft</h1>
       </header>
@@ -297,12 +308,7 @@ function ErrorState({
           defaultValue={record.input.value}
           className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
-        <button
-          type="submit"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm text-white"
-        >
-          Retry
-        </button>
+        <SubmitButton pendingText="Drafting…">Retry</SubmitButton>
       </form>
     </main>
   );
@@ -317,6 +323,7 @@ function NeedsPasteState({
 }) {
   return (
     <main className="space-y-6">
+      <TopNav />
       <header>
         <h1 className="text-2xl font-semibold">Newsletter Draft</h1>
       </header>
@@ -341,12 +348,7 @@ function NeedsPasteState({
           placeholder="Paste the article text here"
           className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
-        <button
-          type="submit"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm text-white"
-        >
-          Draft it
-        </button>
+        <SubmitButton pendingText="Drafting…">Draft it</SubmitButton>
       </form>
     </main>
   );
@@ -355,6 +357,7 @@ function NeedsPasteState({
 function MissingKeyState() {
   return (
     <main className="space-y-6">
+      <TopNav />
       <header>
         <h1 className="text-2xl font-semibold">Newsletter Draft</h1>
       </header>
