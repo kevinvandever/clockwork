@@ -4,18 +4,24 @@ import {
   ClaudeMarketingDrafter,
   type NewsletterDraftStore,
 } from "@clockwork/marketing";
+import { hasDatabase, getPool, PostgresNewsletterDraftStore } from "@clockwork/db";
 import { getTenantStore } from "./app";
 
 // --- Singleton caching (same pattern as lib/app.ts) ---
 
 const globalForNewsletter = globalThis as unknown as {
-  __newsletterStore?: InMemoryNewsletterDraftStore;
+  __newsletterStore?: NewsletterDraftStore;
 };
 
-/** Process-wide singleton store for newsletter drafts. */
+/**
+ * Process-wide singleton store for newsletter drafts. Postgres when DATABASE_URL
+ * is set (matches the app's tenant/agentfolio backend), otherwise in-memory.
+ */
 export function getNewsletterStore(): NewsletterDraftStore {
   if (!globalForNewsletter.__newsletterStore) {
-    globalForNewsletter.__newsletterStore = new InMemoryNewsletterDraftStore();
+    globalForNewsletter.__newsletterStore = hasDatabase()
+      ? new PostgresNewsletterDraftStore(getPool())
+      : new InMemoryNewsletterDraftStore();
   }
   return globalForNewsletter.__newsletterStore;
 }

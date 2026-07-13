@@ -3,10 +3,11 @@ import { resolve } from "node:path";
 import {
   AgentfolioService,
   InMemoryAgentfolioStore,
+  type AgentfolioStore,
   type Actor,
 } from "@clockwork/agentfolio-core";
 import { StubRecordsProvider } from "@clockwork/records";
-import { InMemoryActivityLog } from "@clockwork/activity-log";
+import { InMemoryActivityLog, type ActivityLog } from "@clockwork/activity-log";
 import { ActivityLogEventSink } from "@clockwork/agentfolio-connect";
 import {
   InMemoryTenantStore,
@@ -14,6 +15,14 @@ import {
   provisionTenant,
   type TenantStore,
 } from "@clockwork/tenants";
+import {
+  hasDatabase,
+  getPool,
+  migrate,
+  PostgresTenantStore,
+  PostgresAgentfolioStore,
+  PostgresActivityLog,
+} from "@clockwork/db";
 
 export const DEMO_TENANT = "tenant-demo";
 
@@ -46,47 +55,111 @@ function loadSkillTemplate(file: string): string | undefined {
 }
 
 export interface AppContext {
-  store: InMemoryAgentfolioStore;
+  store: AgentfolioStore;
   service: AgentfolioService;
-  activityLog: InMemoryActivityLog;
+  activityLog: ActivityLog;
   tenantStore: TenantStore;
+  /** True when backed by Postgres (DATABASE_URL set); false = in-memory. */
+  usingDatabase: boolean;
+  agentId: string;
+  clientId: string;
+  boardId: string;
+}
+
+interface SeedIds {
   agentId: string;
   clientId: string;
   boardId: string;
 }
 
 /**
- * Build the in-memory stores + service and seed demo data once. In-memory only —
- * resets on restart, which is fine for the prototype (docs/DECISIONS.md D6).
+ * Build the stores + service and seed the demo data once.
  *
- * Multi-tenant: the tenant registry is provisioned here (admin-provisioned model,
- * not self-serve). The demo tenant is seeded with the marketing skill template;
- * the Anthropic API key is intentionally NOT seeded — the agent supplies their
- * own via settings (BYO).
+ * Backend selection: Postgres when DATABASE_URL is set (durable, survives
+ * restarts — the Railway path), otherwise in-memory (local dev + tests). The
+ * demo seed is idempotent so it survives Postgres restarts without duplicating.
+ * The demo tenant's Anthropic key is never seeded — BYO via Settings.
  */
 export async function createApp(): Promise<AppContext> {
-  const store = new InMemoryAgentfolioStore();
-  const activityLog = new InMemoryActivityLog();
+  const usingDatabase = hasDatabase();
+  const cipher = new SecretCipher(getEncryptionSecret());
+
+  let store: AgentfolioStore;
+  let activityLog: ActivityLog;
+  let tenantStore: TenantStore;
+
+  if (usingDatabase) {
+    const pool = getPool();
+    await migrate(pool);
+    store = new PostgresAgentfolioStore(pool);
+    activityLog = new PostgresActivityLog(pool);
+    tenantStore = new PostgresTenantStore(pool, cipher);
+  } else {
+    store = new InMemoryAgentfolioStore();
+    activityLog = new InMemoryActivityLog();
+    tenantStore = new InMemoryTenantStore(cipher);
+  }
+
   const service = new AgentfolioService(store, {
     recordsProvider: new StubRecordsProvider(),
     // Connected: board actions feed the shared activity log (Chief of Staff).
     eventSink: new ActivityLogEventSink(activityLog),
   });
 
-  // --- Tenant registry (encrypted secrets + versioned skills + persona names) ---
-  const tenantStore = new InMemoryTenantStore(
-    new SecretCipher(getEncryptionSecret()),
-  );
-  await provisionTenant(tenantStore, {
-    tenantId: DEMO_TENANT,
-    displayName: "Demo Practice",
-    skills: {
-      // Seed Joe's marketing skill from the template; BYO key stays unset.
-      marketing: loadSkillTemplate("newsletter-draft.md"),
-      clientCare: loadSkillTemplate("sal-method.md"),
-    },
-  });
+  // Provision the demo tenant (skills seeded; API key stays unset — BYO).
+  if (!(await tenantStore.getTenant(DEMO_TENANT))) {
+    await provisionTenant(tenantStore, {
+      tenantId: DEMO_TENANT,
+      displayName: "Demo Practice",
+      skills: {
+        marketing: loadSkillTemplate("newsletter-draft.md"),
+        clientCare: loadSkillTemplate("sal-method.md"),
+      },
+    });
+  }
 
+  // Reuse an existing seed (Postgres, across restarts) or create it fresh.
+  const existing = usingDatabase ? await findExistingSeed() : null;
+  const ids = existing ?? (await runDemoSeed(service, store));
+
+  return {
+    store,
+    service,
+    activityLog,
+    tenantStore,
+    usingDatabase,
+    ...ids,
+  };
+}
+
+/**
+ * Look for an already-seeded demo agent + client + board (Postgres path). Returns
+ * null if the seed is absent or incomplete, in which case it gets created.
+ */
+async function findExistingSeed(): Promise<SeedIds | null> {
+  const pool = getPool();
+  const { rows: users } = await pool.query<{ id: string; role: string }>(
+    `select id, role from af_users where tenant_id = $1`,
+    [DEMO_TENANT],
+  );
+  const agent = users.find((u) => u.role === "agent");
+  const client = users.find((u) => u.role === "client");
+  if (!agent || !client) return null;
+
+  const { rows: boards } = await pool.query<{ id: string }>(
+    `select id from af_boards where tenant_id = $1 order by created_at limit 1`,
+    [DEMO_TENANT],
+  );
+  if (boards.length === 0) return null;
+
+  return { agentId: agent.id, clientId: client.id, boardId: boards[0].id };
+}
+
+/** Seed the demo agent, client, board, and sample properties. */
+async function runDemoSeed(
+  service: AgentfolioService,
+  store: AgentfolioStore,
+): Promise<SeedIds> {
   const joe = await store.createUser({
     tenantId: DEMO_TENANT,
     role: "agent",
@@ -134,15 +207,7 @@ export async function createApp(): Promise<AppContext> {
     body: "What did you think of the backyard?",
   });
 
-  return {
-    store,
-    service,
-    activityLog,
-    tenantStore,
-    agentId: joe.id,
-    clientId: cal.id,
-    boardId: board.id,
-  };
+  return { agentId: joe.id, clientId: cal.id, boardId: board.id };
 }
 
 const globalForApp = globalThis as unknown as {

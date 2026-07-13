@@ -14,6 +14,7 @@
     "@clockwork/activity-log": "workspace:*",
     "@clockwork/agentfolio-connect": "workspace:*",
     "@clockwork/agentfolio-core": "workspace:*",
+    "@clockwork/db": "workspace:*",
     "@clockwork/marketing": "workspace:*",
     "@clockwork/records": "workspace:*",
     "@clockwork/tenants": "workspace:*",
