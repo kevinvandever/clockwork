@@ -13,6 +13,7 @@ import {
   type RecordsProvider,
   type Stage,
   type Tour,
+  type User,
 } from "./types.js";
 import { viewProperty, visibleNotes, type PropertyView } from "./views.js";
 
@@ -45,6 +46,44 @@ export class AgentfolioService {
   ) {
     this.recordsProvider = options.recordsProvider;
     this.eventSink = options.eventSink;
+  }
+
+  // --- clients (buyers) ---
+
+  /**
+   * Create (or reuse) a buyer/client user in the agent's tenant. Agent-only.
+   * Deduped by email within the tenant so re-entering the same buyer returns
+   * the existing user rather than creating a duplicate identity.
+   */
+  async createClient(
+    actor: Actor,
+    input: { name: string; email: string },
+  ): Promise<User> {
+    this.requireAgent(actor);
+    const name = input.name.trim();
+    const email = input.email.trim();
+    if (!name || !email) {
+      throw new AgentfolioError(
+        "invalid_input",
+        "client name and email are required",
+      );
+    }
+    const existing = (await this.store.listUsers(actor.tenantId, "client")).find(
+      (u) => u.email.toLowerCase() === email.toLowerCase(),
+    );
+    if (existing) return existing;
+    return this.store.createUser({
+      tenantId: actor.tenantId,
+      role: "client",
+      name,
+      email,
+    });
+  }
+
+  /** List the tenant's buyer/client users (agent-only). */
+  async listClients(actor: Actor): Promise<User[]> {
+    this.requireAgent(actor);
+    return this.store.listUsers(actor.tenantId, "client");
   }
 
   // --- boards ---

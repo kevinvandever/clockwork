@@ -70,17 +70,32 @@ export default async function BoardsPage() {
             Start a new search
           </h2>
           <p className="text-sm text-zinc-500">
-            Give it a name your client will recognize — usually their name or
-            the area they&apos;re searching (e.g. &quot;Cal&apos;s Home
-            Search&quot;).
+            Name the search and assign the buyer. Your client signs in with this
+            email to see their side of the board.
           </p>
-          <form action={createBoardAction} className="flex gap-2">
+          <form action={createBoardAction} className="space-y-2">
             <input
               name="title"
-              placeholder="e.g. Cal's Home Search"
-              className="flex-1 rounded-md border border-zinc-300 px-3 py-2"
+              required
+              placeholder="Search name (e.g. Cal's Home Search)"
+              className="w-full rounded-md border border-zinc-300 px-3 py-2"
             />
-            <button className="rounded-md bg-zinc-900 px-4 py-2 text-white">
+            <div className="flex flex-wrap gap-2">
+              <input
+                name="clientName"
+                required
+                placeholder="Buyer name"
+                className="flex-1 rounded-md border border-zinc-300 px-3 py-2"
+              />
+              <input
+                name="clientEmail"
+                type="email"
+                required
+                placeholder="Buyer email"
+                className="flex-1 rounded-md border border-zinc-300 px-3 py-2"
+              />
+            </div>
+            <button className="cursor-pointer rounded-md bg-zinc-900 px-4 py-2 text-white">
               Create search
             </button>
           </form>

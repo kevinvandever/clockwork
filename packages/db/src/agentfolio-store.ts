@@ -175,6 +175,21 @@ export class PostgresAgentfolioStore implements AgentfolioStore {
     return rows.length ? toUser(rows[0]) : null;
   }
 
+  async listUsers(tenantId: string, role?: Role): Promise<User[]> {
+    if (role) {
+      const { rows } = await this.pool.query<UserRow>(
+        `select * from af_users where tenant_id = $1 and role = $2 order by name`,
+        [tenantId, role],
+      );
+      return rows.map(toUser);
+    }
+    const { rows } = await this.pool.query<UserRow>(
+      `select * from af_users where tenant_id = $1 order by name`,
+      [tenantId],
+    );
+    return rows.map(toUser);
+  }
+
   async createBoard(input: CreateBoardInput): Promise<Board> {
     const id = `board_${randomUUID()}`;
     const createdAt = this.now();

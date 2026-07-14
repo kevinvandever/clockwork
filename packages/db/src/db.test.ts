@@ -177,6 +177,20 @@ run("Postgres stores (integration)", () => {
       expect(props).toHaveLength(1);
     });
 
+    it("lists users by tenant and role", async () => {
+      const s = store();
+      await s.createUser({ tenantId: "t1", role: "agent", name: "Joe", email: "j@x.com" });
+      await s.createUser({ tenantId: "t1", role: "client", name: "Cal", email: "c@x.com" });
+      await s.createUser({ tenantId: "t2", role: "client", name: "Zed", email: "z@x.com" });
+
+      expect(await s.listUsers("t1")).toHaveLength(2);
+      const t1Clients = await s.listUsers("t1", "client");
+      expect(t1Clients).toHaveLength(1);
+      expect(t1Clients[0].name).toBe("Cal");
+      // tenant isolation
+      expect(await s.listUsers("t2", "client")).toHaveLength(1);
+    });
+
     it("resolves a user by email (case-insensitive) for auth", async () => {
       const s = store();
       const u = await s.createUser({

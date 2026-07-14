@@ -71,6 +71,8 @@ export interface AgentfolioStore {
    * non-tenant-scoped read. Email is treated as unique across the system.
    */
   getUserByEmail(email: string): Promise<User | null>;
+  /** List users in a tenant, optionally filtered by role. */
+  listUsers(tenantId: string, role?: Role): Promise<User[]>;
 
   createBoard(input: CreateBoardInput): Promise<Board>;
   getBoard(tenantId: string, id: string): Promise<Board | null>;
@@ -136,6 +138,12 @@ export class InMemoryAgentfolioStore implements AgentfolioStore {
   async getUserByEmail(email: string): Promise<User | null> {
     const target = email.toLowerCase();
     return this.users.find((u) => u.email.toLowerCase() === target) ?? null;
+  }
+
+  async listUsers(tenantId: string, role?: Role): Promise<User[]> {
+    return this.users.filter(
+      (u) => u.tenantId === tenantId && (role ? u.role === role : true),
+    );
   }
 
   async createBoard(input: CreateBoardInput): Promise<Board> {

@@ -43,6 +43,12 @@ export default async function BoardPage({
     notFound();
   }
 
+  const isAgentEarly = actor.role === "agent";
+  const client =
+    isAgentEarly && board.clientId
+      ? (await service.listClients(actor)).find((c) => c.id === board.clientId)
+      : undefined;
+
   const properties = await service.listProperties(actor, boardId);
   const enriched = await Promise.all(
     properties.map(async (property) => ({
@@ -62,6 +68,21 @@ export default async function BoardPage({
             ← All searches
           </Link>
           <h1 className="text-2xl font-semibold">{board.title}</h1>
+          {isAgent && (
+            <p className="mt-0.5 text-sm text-zinc-600">
+              Buyer:{" "}
+              {client ? (
+                <span className="font-medium">
+                  {client.name}{" "}
+                  <span className="font-normal text-zinc-400">
+                    ({client.email})
+                  </span>
+                </span>
+              ) : (
+                <span className="text-amber-700">none assigned</span>
+              )}
+            </p>
+          )}
           <p className="mt-1 text-sm text-zinc-600">
             Properties move through stages as the search progresses:{" "}
             <span className="font-medium">New → Touring → Offer → Passed</span>.

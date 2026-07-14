@@ -42,10 +42,20 @@ export async function logoutAction(): Promise<void> {
 export async function createBoardAction(formData: FormData): Promise<void> {
   const actor = await getActor();
   if (!actor) redirect("/");
+  if (actor.role !== "agent") redirect("/boards");
+
   const title = String(formData.get("title") ?? "").trim();
-  if (title) {
+  const clientName = String(formData.get("clientName") ?? "").trim();
+  const clientEmail = String(formData.get("clientEmail") ?? "").trim();
+
+  if (title && clientName && clientEmail) {
     const { service } = await getApp();
-    await service.createBoard(actor, { title, clientId: actor.userId });
+    // Create/reuse the buyer, then open their search tied to them.
+    const client = await service.createClient(actor, {
+      name: clientName,
+      email: clientEmail,
+    });
+    await service.createBoard(actor, { title, clientId: client.id });
   }
   revalidatePath("/boards");
 }
