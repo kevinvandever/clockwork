@@ -69,8 +69,11 @@ export default async function NewsletterPage({ searchParams }: PageProps) {
 function TopNav() {
   return (
     <nav className="flex gap-4 text-sm text-zinc-500">
+      <a href="/home" className="underline hover:text-zinc-800">
+        Home
+      </a>
       <a href="/boards" className="underline hover:text-zinc-800">
-        Boards
+        Searches
       </a>
       <a href="/settings" className="underline hover:text-zinc-800">
         Settings

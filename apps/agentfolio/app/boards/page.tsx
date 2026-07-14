@@ -20,6 +20,9 @@ export default async function BoardsPage() {
         <div className="flex items-center gap-3 text-sm text-zinc-600">
           {isAgent && (
             <>
+              <Link href="/home" className="underline">
+                Home
+              </Link>
               <Link href="/newsletter" className="underline">
                 Newsletter
               </Link>

@@ -31,7 +31,8 @@ export async function loginAction(formData: FormData): Promise<void> {
   }
 
   await setSession(user.tenantId, user.id);
-  redirect("/boards");
+  // Agents land on their cockpit; clients go to their board.
+  redirect(user.role === "agent" ? "/home" : "/boards");
 }
 
 export async function logoutAction(): Promise<void> {

@@ -7,8 +7,9 @@ interface PageProps {
 }
 
 export default async function LoginPage({ searchParams }: PageProps) {
-  if (await getActor()) {
-    redirect("/boards");
+  const current = await getActor();
+  if (current) {
+    redirect(current.role === "agent" ? "/home" : "/boards");
   }
   const params = await searchParams;
   const error = params.error === "invalid";
